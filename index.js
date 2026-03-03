@@ -32,16 +32,36 @@ app.get("/webhook", (req, res) => {
 // =============================
 app.post("/webhook", async (req, res) => {
   try {
-    const message =
-      req.body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
 
-    if (!message) return res.sendStatus(200);
+    // 🔴 FILTRO 1: Verificar que exista mensaje real
+    if (
+      !req.body.entry ||
+      !req.body.entry[0].changes ||
+      !req.body.entry[0].changes[0].value.messages ||
+      !req.body.entry[0].changes[0].value.messages[0]
+    ) {
+      return res.sendStatus(200);
+    }
+
+    const message = req.body.entry[0].changes[0].value.messages[0];
+
+    // 🔴 FILTRO 2: Solo aceptar texto
+    if (message.type !== "text") {
+      return res.sendStatus(200);
+    }
+
+    // 🔴 FILTRO 3: Evitar que el bot se responda solo
+    if (message.from === PHONE_NUMBER_ID) {
+      return res.sendStatus(200);
+    }
 
     const text = message.text?.body || "";
     const userMessage = text.toLowerCase().trim();
+    const messageId = message.id;
 
     let raw = message.from;
 
+    // 🔴 Normalizar número México
     if (raw.startsWith("521")) {
       raw = "52" + raw.slice(3);
     }
@@ -52,9 +72,17 @@ app.post("/webhook", async (req, res) => {
       raw.slice(5, 8) + " " +
       raw.slice(8);
 
+    // 🔴 Crear estado si no existe
     if (!userStates[from]) {
-      userStates[from] = { step: "menu" };
+      userStates[from] = { step: "menu", lastMessageId: null };
     }
+
+    // 🔴 FILTRO 4: Evitar mensajes duplicados
+    if (userStates[from].lastMessageId === messageId) {
+      return res.sendStatus(200);
+    }
+
+    userStates[from].lastMessageId = messageId;
 
     let responseText = "";
 
@@ -108,18 +136,19 @@ C) Hospital
 D) Metalmecánica
 E) Invernadero
 F) Escuelas
+
 ¿Qué tipo de suciedad desea eliminar?
-¿En qué tipo de superficies se encuientra esta suciedad o desea apñicar el producto?
-¿Qué tipo de producto desea adquirir? 
+¿En qué tipo de superficie?
+¿Qué tipo de producto desea adquirir?
+
 Escribe 0 para volver al menú.`;
       }
 
       else if (userMessage === "3") {
-        userStates[from].step = "facturacion";
         responseText =
 `🧾 Facturación
-Con gusto te apoyamos, proporcionanos tu constancia de situación fiscal y en caso de refacturación el número de factura involucrada al correo info@betaprocesos.com.mx
-Beta, Brillantez Excepcional, Tu Aliado en limpieza profesional :)
+Envíanos tu constancia de situación fiscal y en caso de refacturación el número de factura al correo:
+info@betaprocesos.com.mx
 
 Escribe 0 para volver al menú.`;
       }
@@ -135,7 +164,6 @@ Escribe 0 para volver al menú.`;
         responseText =
 `🛒 Compras
 Contacto:
-Para ofrecernos tus productos comunicate al correo
 staffcompras@betaprocesos.com.mx
 Escribe 0 para volver al menú.`;
       }
@@ -158,23 +186,23 @@ Escribe 0 para volver al menú.`;
       else if (userMessage === "7") {
         responseText =
 `👥 Reclutamiento
-En Beta Procesos nos encanta tener nuevos talentos.
-Por favor, envíanos tu curriculum vitae a fvazquez@betaprocesos.com.mx  o visita nuestro facebook dando clic en el enlace y con gusto uno de nuestros reclutadores te atenderan. ¡Mucho éxito! 
-https://www.facebook.com/profile.php?id=61555196763207&locale=es_LA
+Envíanos tu CV a:
+fvazquez@betaprocesos.com.mx
+
 Escribe 0 para volver al menú.`;
       }
 
       else if (userMessage === "8") {
         responseText =
 `📍 Sucursal Principal:
-Av. México–Japón No.146, Col. Ciudad Industrial. , Celaya, Mexico, 38010.
+Av. México–Japón No.146, Col. Ciudad Industrial, Celaya, Gto.
 
-Sucursal 2 de abril: 
+Sucursal 2 de abril:
 Av. 2 de abril #230 local 208 Col. Villa de los Reyes, Celaya, Gto.
 
-Horarios de tienda:
-Lunes a viernes: 8:00 a.m.-6:00 p.m.
-Sábado: 8:00 a.m.-2:00 p.m.
+Horario:
+L-V 8:00am - 6:00pm
+Sáb 8:00am - 2:00pm
 
 Escribe 0 para volver al menú.`;
       }
@@ -185,11 +213,11 @@ Escribe 0 para volver al menú.`;
 `📢 Área de Quejas
 Q1 Productos
 Q2 Unidades
+
 Escribe Q1 o Q2`;
       }
 
       else {
-        // Siempre mostrar menú si es primer mensaje o inválido
         responseText = mainMenu;
       }
     }
@@ -220,7 +248,7 @@ Escribe Q1 o Q2`;
 
       responseText =
 `✅ Gracias por tu reporte.
-Lamentamos lo ocurrido y daremos seguimiento inmediato.
+Daremos seguimiento inmediato.
 
 Escribe 0 para volver al menú.`;
 
@@ -233,8 +261,7 @@ Escribe 0 para volver al menú.`;
 
       responseText =
 `✅ Gracias por tu reporte.
-¿Podría indicarnos ubicación, hora aproximada y número de unidad?
-Con esta información podremos dar seguimiento puntual.
+Indícanos ubicación, hora y número de unidad.
 
 Escribe 0 para volver al menú.`;
 
@@ -244,7 +271,6 @@ Escribe 0 para volver al menú.`;
     else if (
       userStates[from].step === "info_productos" ||
       userStates[from].step === "cotizacion" ||
-      userStates[from].step === "facturacion" ||
       userStates[from].step === "ficha"
     ) {
 
