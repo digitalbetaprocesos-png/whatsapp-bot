@@ -166,10 +166,15 @@ Escribe 0 para volver al menú.`;
 
       else if (userMessage === "8") {
         responseText =
-`📍 Dirección tienda Celaya
-Av. México–Japón No.146
-Col. Ciudad Industrial
-Celaya, Gto.
+`📍 Sucursal Principal:
+Av. México–Japón No.146, Col. Ciudad Industrial. , Celaya, Mexico, 38010.
+
+Sucursal 2 de abril: 
+Av. 2 de abril #230 local 208 Col. Villa de los Reyes, Celaya, Gto.
+
+Horarios de tienda:
+Lunes a viernes: 8:00 a.m.-6:00 p.m.
+Sábado: 8:00 a.m.-2:00 p.m.
 
 Escribe 0 para volver al menú.`;
       }
