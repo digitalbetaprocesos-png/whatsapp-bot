@@ -1,13 +1,13 @@
 const express = require("express");
-const bodyParser = require("body-parser");
 const axios = require("axios");
 
 const app = express();
-app.use(bodyParser.json());
+app.use(express.json());
 
-const TOKEN = "EAAd138gADPABQ4wiPYNkPZBIsDdwdedKeVLcMQlCZBiy6CiWbu2LnERZBUNZBzxiDqUwiuAAVsxXRbR7mMPZBLj7yy2ef3Sk7pHKBWrL5xkSFLOqjyFTQz5so5ezjqZBhQXbhaDI1CZBZCPdpiZBzAPlFqaqeKfXacbfQFkdOWuimE1cH2T9evdgbCbJLHB0FGALIInZCUo1NZArqWBuY6JVpXX8WICqBZCqlcEy9ay8R9PyGgrN6517VZCQ0EuOVJjvpdCkxQyQxpajQsOP2ju7YeyztTtb7OvaSTdLTVBuZBRfMZD"; 
-const PHONE_NUMBER_ID = "981726608362636";
-const VERIFY_TOKEN = "diego123";
+// 🔐 Variables de entorno
+const TOKEN = process.env.WHATSAPP_TOKEN;
+const PHONE_NUMBER_ID = process.env.PHONE_NUMBER_ID;
+const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
 
 const userStates = {};
 
@@ -21,9 +21,9 @@ app.get("/webhook", (req, res) => {
 
   if (mode && token === VERIFY_TOKEN) {
     console.log("Webhook verificado");
-    res.status(200).send(challenge);
+    return res.status(200).send(challenge);
   } else {
-    res.sendStatus(403);
+    return res.sendStatus(403);
   }
 });
 
@@ -64,8 +64,7 @@ app.post("/webhook", async (req, res) => {
     if (userMessage === "0" || userMessage === "menu") {
       userStates[from].step = "menu";
       responseText =
-`👋 Hola. Bienvenido a Beta Procesos, tu aliado en limpieza profesional, te atiende Sr. Beta. 
-    ¿En qué puedo ayudarte?
+`👋 Hola. Bienvenido a Beta Procesos, tu aliado en limpieza profesional.
 
 1️⃣ Información Productos
 2️⃣ Cotización
@@ -91,107 +90,82 @@ app.post("/webhook", async (req, res) => {
         userStates[from].step = "info_productos";
         responseText =
 `📦 Información de Productos
-    Hola, puedes adquirirlos en nuestras tiendas de venta al público en general que se encuentran ubicadas en Celaya Gto.
-    Si requieres productos para satisfacer necesidades de limpieza para tu empresa uno de nuestros ejecutivos puede darte seguimiento compartiéndonos los siguientes datos:
-    Nombre: 
-    Giro de la empresa: 
-    Estado de la república:
-    Teléfono: 
-    Correo electrónico:
-    Producto deseado:
-    ¿Cuenta con alguna certificación?
-    Escribe o para volver a menu`
-    ;
+Comparte los siguientes datos:
+Nombre:
+Empresa:
+Estado:
+Teléfono:
+Correo:
+Producto deseado:
+Escribe 0 para volver al menú.`;
       }
 
       else if (userMessage === "2") {
         userStates[from].step = "cotizacion";
         responseText =
 `💰 Cotización
-     Estamos encantados de proporcionarte una cotización personalizada. 
-
-   Por favor, indicanos el giro de tu empresa. 
-   A) Hotel
-   B) Restaurante
-   C) Hospital
-   D) Metalmecánica
-   E) Invernadero 
-   F) Escuelas
-   D) Otro 
-
-`;
+Indícanos el giro de tu empresa:
+A) Hotel
+B) Restaurante
+C) Hospital
+D) Metalmecánica
+E) Invernadero
+F) Escuelas
+Escribe 0 para volver al menú.`;
       }
 
       else if (userMessage === "3") {
         userStates[from].step = "facturacion";
         responseText =
-`🧾Con gusto te apoyamos, proporcionanos tu constancia de situación fiscal y en caso de refacturación el número de factura involucrada al correo info@betaprocesos.com.mx
-
-    Beta, Brillantez Excepcional, Tu Aliado en limpieza profesional :)
-    Escribe 0 para volver al menú.`;
+`🧾 Facturación
+Con gusto te apoyamos, proporcionanos tu constancia de situación fiscal \ny en caso de refacturación el número de factura involucrada al correo info@betaprocesos.com.mx
+Beta, Brillantez Excepcional, Tu Aliado en limpieza profesional :)
+Escribe 0 para volver al menú.`;
       }
 
       else if (userMessage === "4") {
-        userStates[from].step = "rastreo";
         responseText =
 `🚚 Rastreo
-    Por el momento no contamos con servicio en la tienda web 
+Por el momento no contamos con rastreo web.
 Escribe 0 para volver al menú.`;
       }
 
       else if (userMessage === "5") {
-        userStates[from].step = "compras";
         responseText =
 `🛒 Compras
-  Para ofrecernos tus prodcutos te puedes comunicar a este correo 
-  staffcompras@betaprocesos.com.mx
-
-  Escribe 0 para volver al menú.`;
+Contacto:
+staffcompras@betaprocesos.com.mx
+Escribe 0 para volver al menú.`;
       }
 
       else if (userMessage === "6") {
         userStates[from].step = "ficha";
         responseText =
-`📄 Ficha Técnica / Hoja de Seguridad
-  Hola, puedes compartirnos los siguientes datos para vincularte con un ejecutivo y pueda darte más información, por favor:
+`📄 Ficha Técnica
+Hola, puedes compartirnos los siguientes datos para vincularte con un ejecutivo y pueda darte más información, por favor:
   Razón social:
   Empresa:
   Ciudad: 
   Teléfono:
   Correo:
   Y nombre de la persona que atenderá a nuestro ejecutivo
-  Escribe 0 para volver al menú.`;
+Escribe 0 para volver al menú.`;
       }
 
       else if (userMessage === "7") {
-        userStates[from].step = "reclutamiento";
         responseText =
 `👥 Reclutamiento
-Hola. En Beta Procesos nos encanta tener nuevos talentos.
- Por favor, envíanos tu curriculum vitae a fvazquez@betaprocesos.com.mx  o visita nuestro facebook dando clic en el enlace y con gusto uno de nuestros reclutadores te atenderan. ¡Mucho éxito! 
-
-https://www.facebook.com/profile.php?id=61555196763207&locale=es_LA
+Envía tu CV a:
+fvazquez@betaprocesos.com.mx
 Escribe 0 para volver al menú.`;
       }
 
       else if (userMessage === "8") {
-        userStates[from].step = "direccion";
         responseText =
-`📍 Ubicación tienda Celaya
-
-Sucursal Principal:
+`📍 Dirección tienda Celaya
 Av. México–Japón No.146
 Col. Ciudad Industrial
 Celaya, Gto.
-
-Sucursal 2 de abril:
-Av. 2 de abril #230 local 208
-Col. Villa de los Reyes
-
-Horario:
-Lunes a viernes 8:00am - 6:00pm
-Sábado 8:00am - 2:00pm
-
 Escribe 0 para volver al menú.`;
       }
 
@@ -199,15 +173,13 @@ Escribe 0 para volver al menú.`;
         userStates[from].step = "quejas";
         responseText =
 `📢 Área de Quejas
-
 Q1 Productos
-Q2 Mal manejo de unidades
-
-Escribe Q1 o Q2
-Escribe 0 para volver al menú.`;
+Q2 Unidades
+Escribe Q1 o Q2`;
       }
     }
 
+    
     // =============================
     // 🔹 QUEJAS
     // =============================
@@ -254,23 +226,18 @@ Quedamos a sus órdenes y le reiteramos nuestro compromiso con la conducción re
       userStates[from].step = "menu";
     }
 
-    // =============================
-    // 🔹 CAPTURA GENERAL
-    // =============================
+
     else if (
       userStates[from].step === "info_productos" ||
       userStates[from].step === "cotizacion" ||
       userStates[from].step === "facturacion" ||
-      userStates[from].step === "rastreo" ||
-      userStates[from].step === "compras" ||
       userStates[from].step === "ficha"
     ) {
-
-      console.log(`Solicitud ${userStates[from].step}:`, text);
+      console.log("Solicitud:", text);
 
       responseText =
 `✅ Hemos recibido tu información.
-Un asesor se pondrá en contacto contigo a la brevedad.
+Un asesor se pondrá en contacto contigo.
 Escribe MENU para volver.`;
 
       userStates[from].step = "menu";
@@ -304,6 +271,9 @@ Escribe MENU para volver.`;
   }
 });
 
-app.listen(3000, () => {
-  console.log("🚀 Servidor corriendo en puerto 3000");
+// 🔹 IMPORTANTE PARA RENDER
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log("🚀 Servidor corriendo en puerto " + PORT);
 });
