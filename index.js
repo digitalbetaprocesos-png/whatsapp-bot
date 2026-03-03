@@ -58,13 +58,7 @@ app.post("/webhook", async (req, res) => {
 
     let responseText = "";
 
-    // =============================
-    // 🔴 VOLVER AL MENÚ GLOBAL
-    // =============================
-    if (userMessage === "0" || userMessage === "menu") {
-      userStates[from].step = "menu";
-      responseText =
-`👋 Hola. Bienvenido a Beta Procesos, tu aliado en limpieza profesional.
+    const mainMenu = `👋 Hola. Bienvenido a Beta Procesos, tu aliado en limpieza profesional.
 
 1️⃣ Información Productos
 2️⃣ Cotización
@@ -75,6 +69,13 @@ app.post("/webhook", async (req, res) => {
 7️⃣ Reclutamiento
 8️⃣ Dirección tienda Celaya
 9️⃣ Quejas`;
+
+    // =============================
+    // 🔴 VOLVER AL MENÚ GLOBAL
+    // =============================
+    if (userMessage === "0") {
+      userStates[from].step = "menu";
+      responseText = mainMenu;
     }
 
     // =============================
@@ -82,15 +83,11 @@ app.post("/webhook", async (req, res) => {
     // =============================
     else if (userStates[from].step === "menu") {
 
-      if (userMessage === "hola") {
-        responseText = "👋 Hola. Escribe MENU para ver opciones.";
-      }
-
-      else if (userMessage === "1") {
+      if (userMessage === "1") {
         userStates[from].step = "info_productos";
         responseText =
 `📦 Información de Productos
-Comparte los siguientes datos:
+Comparte:
 Nombre:
 Empresa:
 Estado:
@@ -104,7 +101,7 @@ Escribe 0 para volver al menú.`;
         userStates[from].step = "cotizacion";
         responseText =
 `💰 Cotización
-Indícanos el giro de tu empresa:
+Indícanos el giro:
 A) Hotel
 B) Restaurante
 C) Hospital
@@ -118,8 +115,9 @@ Escribe 0 para volver al menú.`;
         userStates[from].step = "facturacion";
         responseText =
 `🧾 Facturación
-Con gusto te apoyamos, proporcionanos tu constancia de situación fiscal \ny en caso de refacturación el número de factura involucrada al correo info@betaprocesos.com.mx
-Beta, Brillantez Excepcional, Tu Aliado en limpieza profesional :)
+Envía tu constancia de situación fiscal y número de factura (si aplica) a:
+info@betaprocesos.com.mx
+
 Escribe 0 para volver al menú.`;
       }
 
@@ -142,13 +140,14 @@ Escribe 0 para volver al menú.`;
         userStates[from].step = "ficha";
         responseText =
 `📄 Ficha Técnica
-Hola, puedes compartirnos los siguientes datos para vincularte con un ejecutivo y pueda darte más información, por favor:
-  Razón social:
-  Empresa:
-  Ciudad: 
-  Teléfono:
-  Correo:
-  Y nombre de la persona que atenderá a nuestro ejecutivo
+Comparte:
+Razón social:
+Empresa:
+Ciudad:
+Teléfono:
+Correo:
+Persona que atenderá al ejecutivo:
+
 Escribe 0 para volver al menú.`;
       }
 
@@ -166,6 +165,7 @@ Escribe 0 para volver al menú.`;
 Av. México–Japón No.146
 Col. Ciudad Industrial
 Celaya, Gto.
+
 Escribe 0 para volver al menú.`;
       }
 
@@ -177,9 +177,13 @@ Q1 Productos
 Q2 Unidades
 Escribe Q1 o Q2`;
       }
+
+      else {
+        // Siempre mostrar menú si es primer mensaje o inválido
+        responseText = mainMenu;
+      }
     }
 
-    
     // =============================
     // 🔹 QUEJAS
     // =============================
@@ -207,7 +211,8 @@ Escribe Q1 o Q2`;
       responseText =
 `✅ Gracias por tu reporte.
 Lamentamos lo ocurrido y daremos seguimiento inmediato.
-Escribe MENU para volver.`;
+
+Escribe 0 para volver al menú.`;
 
       userStates[from].step = "menu";
     }
@@ -217,15 +222,14 @@ Escribe MENU para volver.`;
       console.log("Queja unidad:", text);
 
       responseText =
-`✅ 
-Hola, buen día.
-Gracias por hacernos llegar este reporte. Lamentamos lo ocurrido y valoramos mucho este tipo de comentarios, ya que nos ayudan a mejorar y a reforzar la seguridad vial.
-¿Podría apoyarnos indicándonos la ubicación exacta, la hora aproximada del incidente y, en caso de haberlo identificado, el número de unidad? Con esta información podremos dar seguimiento puntual con el área correspondiente y tomar las medidas necesarias.
-Quedamos a sus órdenes y le reiteramos nuestro compromiso con la conducción responsable.`;
+`✅ Gracias por tu reporte.
+¿Podría indicarnos ubicación, hora aproximada y número de unidad?
+Con esta información podremos dar seguimiento puntual.
+
+Escribe 0 para volver al menú.`;
 
       userStates[from].step = "menu";
     }
-
 
     else if (
       userStates[from].step === "info_productos" ||
@@ -233,12 +237,14 @@ Quedamos a sus órdenes y le reiteramos nuestro compromiso con la conducción re
       userStates[from].step === "facturacion" ||
       userStates[from].step === "ficha"
     ) {
+
       console.log("Solicitud:", text);
 
       responseText =
 `✅ Hemos recibido tu información.
 Un asesor se pondrá en contacto contigo.
-Escribe MENU para volver.`;
+
+Escribe 0 para volver al menú.`;
 
       userStates[from].step = "menu";
     }
