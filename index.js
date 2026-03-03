@@ -108,6 +108,9 @@ C) Hospital
 D) Metalmecánica
 E) Invernadero
 F) Escuelas
+¿Qué tipo de suciedad desea eliminar?
+¿En qué tipo de superficies se encuientra esta suciedad o desea apñicar el producto?
+¿Qué tipo de producto desea adquirir? 
 Escribe 0 para volver al menú.`;
       }
 
@@ -115,8 +118,8 @@ Escribe 0 para volver al menú.`;
         userStates[from].step = "facturacion";
         responseText =
 `🧾 Facturación
-Envía tu constancia de situación fiscal y número de factura (si aplica) a:
-info@betaprocesos.com.mx
+Con gusto te apoyamos, proporcionanos tu constancia de situación fiscal y en caso de refacturación el número de factura involucrada al correo info@betaprocesos.com.mx
+Beta, Brillantez Excepcional, Tu Aliado en limpieza profesional :)
 
 Escribe 0 para volver al menú.`;
       }
@@ -124,7 +127,7 @@ Escribe 0 para volver al menú.`;
       else if (userMessage === "4") {
         responseText =
 `🚚 Rastreo
-Por el momento no contamos con rastreo web.
+Por el momento no contamos con tienda web.
 Escribe 0 para volver al menú.`;
       }
 
@@ -132,6 +135,7 @@ Escribe 0 para volver al menú.`;
         responseText =
 `🛒 Compras
 Contacto:
+Para ofrecernos tus productos comunicate al correo
 staffcompras@betaprocesos.com.mx
 Escribe 0 para volver al menú.`;
       }
@@ -154,8 +158,9 @@ Escribe 0 para volver al menú.`;
       else if (userMessage === "7") {
         responseText =
 `👥 Reclutamiento
-Envía tu CV a:
-fvazquez@betaprocesos.com.mx
+En Beta Procesos nos encanta tener nuevos talentos.
+Por favor, envíanos tu curriculum vitae a fvazquez@betaprocesos.com.mx  o visita nuestro facebook dando clic en el enlace y con gusto uno de nuestros reclutadores te atenderan. ¡Mucho éxito! 
+https://www.facebook.com/profile.php?id=61555196763207&locale=es_LA
 Escribe 0 para volver al menú.`;
       }
 
