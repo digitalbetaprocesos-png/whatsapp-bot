@@ -300,7 +300,7 @@ Escribe Q1 o Q2`;
           "¿Cuenta con alguna certificación?"
         ]},
         c: { nombre: "Hospital", preguntas: [
-          "¿Número de camas?",
+          "¿Número de cuartos?",
           "¿Qué tipo de suciedad desea limpiar?",
           "¿En qué tipo de superficies se encuentra esta suciedad o desea aplicar el producto?",
           "Para continuar con la cotizacion,\nPor favor proporcionanos la siguiente información,\nNombre de la persona que atenderá a nuestro ejecutivo",
@@ -382,11 +382,12 @@ Escribe Q1 o Q2`;
         const numero = parseInt(text);
 
         if (
-          (userStates[from].giro === "Hotel" && numero <= 40) ||
+          (userStates[from].giro === "Hotel" && numero <= 39) ||
+          (userStates[from].giro === "Restaurante" && numero <= 19) ||
           (userStates[from].giro === "Hospital" && numero <= 20) ||
-          (userStates[from].giro === "Metalmecánica" && numero <= 15) ||
-          (userStates[from].giro === "Invernadero" && numero <= 1) ||
-          (userStates[from].giro === "Escuela" && numero <= 200)
+          (userStates[from].giro === "Metalmecánica" && numero <= 199) ||
+          (userStates[from].giro === "Invernadero" && numero <= 3) ||
+          (userStates[from].giro === "Escuela" && numero <= 999)
         ) {
 
           responseText =
