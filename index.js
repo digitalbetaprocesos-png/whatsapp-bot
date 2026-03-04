@@ -33,7 +33,6 @@ app.get("/webhook", (req, res) => {
 app.post("/webhook", async (req, res) => {
   try {
 
-    // 🔴 FILTRO 1: Verificar que exista mensaje real
     if (
       !req.body.entry ||
       !req.body.entry[0].changes ||
@@ -45,12 +44,10 @@ app.post("/webhook", async (req, res) => {
 
     const message = req.body.entry[0].changes[0].value.messages[0];
 
-    // 🔴 FILTRO 2: Solo aceptar texto
     if (message.type !== "text") {
       return res.sendStatus(200);
     }
 
-    // 🔴 FILTRO 3: Evitar que el bot se responda solo
     if (message.from === PHONE_NUMBER_ID) {
       return res.sendStatus(200);
     }
@@ -61,7 +58,6 @@ app.post("/webhook", async (req, res) => {
 
     let raw = message.from;
 
-    // 🔴 Normalizar número México
     if (raw.startsWith("521")) {
       raw = "52" + raw.slice(3);
     }
@@ -72,12 +68,10 @@ app.post("/webhook", async (req, res) => {
       raw.slice(5, 8) + " " +
       raw.slice(8);
 
-    // 🔴 Crear estado si no existe
     if (!userStates[from]) {
       userStates[from] = { step: "menu", lastMessageId: null };
     }
 
-    // 🔴 FILTRO 4: Evitar mensajes duplicados
     if (userStates[from].lastMessageId === messageId) {
       return res.sendStatus(200);
     }
@@ -99,7 +93,7 @@ app.post("/webhook", async (req, res) => {
 9️⃣ Quejas`;
 
     // =============================
-    // 🔴 VOLVER AL MENÚ GLOBAL
+    // 🔹 VOLVER AL MENÚ
     // =============================
     if (userMessage === "0") {
       userStates[from].step = "menu";
@@ -126,10 +120,12 @@ Escribe 0 para volver al menú.`;
       }
 
       else if (userMessage === "2") {
-        userStates[from].step = "cotizacion";
+        userStates[from].step = "cotizacion_menu";
         responseText =
-`💰 Cotización
+`💰 Cotización Especializada
+
 Indícanos el giro:
+
 A) Hotel
 B) Restaurante
 C) Hospital
@@ -137,10 +133,7 @@ D) Metalmecánica
 E) Invernadero
 F) Escuelas
 
-¿Qué tipo de suciedad desea eliminar?
-¿En qué tipo de superficie?
-¿Qué tipo de producto desea adquirir?
-
+Escribe la letra correspondiente.
 Escribe 0 para volver al menú.`;
       }
 
@@ -223,54 +216,98 @@ Escribe Q1 o Q2`;
     }
 
     // =============================
-    // 🔹 QUEJAS
+    // 🔹 COTIZACIÓN DINÁMICA
     // =============================
-    else if (userStates[from].step === "quejas") {
+    else if (userStates[from].step === "cotizacion_menu") {
 
-      if (userMessage === "q1") {
-        userStates[from].step = "queja_producto";
-        responseText = "📝 Escribe tu queja sobre el producto.";
-      }
+      const preguntasPorGiro = {
+        a: { nombre: "Hotel", preguntas: [
+          "¿Cuántas habitaciones tiene el hotel?",
+          "¿Qué áreas desea sanitizar?",
+          "¿Frecuencia requerida?"
+        ]},
+        b: { nombre: "Restaurante", preguntas: [
+          "¿Cuenta con cocina industrial?",
+          "¿Tipo de grasa a eliminar?",
+          "¿Frecuencia de limpieza?"
+        ]},
+        c: { nombre: "Hospital", preguntas: [
+          "¿Número de camas?",
+          "¿Requiere desinfectante grado hospitalario?",
+          "¿Áreas críticas?"
+        ]},
+        d: { nombre: "Metalmecánica", preguntas: [
+          "¿Tipo de residuo?",
+          "¿Área aproximada?",
+          "¿Frecuencia?"
+        ]},
+        e: { nombre: "Invernadero", preguntas: [
+          "¿Tipo de cultivo?",
+          "¿Área en m²?",
+          "¿Problema principal?"
+        ]},
+        f: { nombre: "Escuela", preguntas: [
+          "¿Nivel educativo?",
+          "¿Número de salones?",
+          "¿Frecuencia?"
+        ]}
+      };
 
-      else if (userMessage === "q2") {
-        userStates[from].step = "queja_unidad";
-        responseText = "📝 Escribe tu queja sobre la unidad.";
-      }
+      if (preguntasPorGiro[userMessage]) {
 
-      else {
-        responseText = "❌ Opción inválida. Escribe Q1 o Q2.";
+        userStates[from] = {
+          step: "cot_pregunta",
+          giro: preguntasPorGiro[userMessage].nombre,
+          preguntas: preguntasPorGiro[userMessage].preguntas,
+          respuestas: [],
+          index: 0,
+          lastMessageId: messageId
+        };
+
+        responseText =
+`📌 Cotización para ${userStates[from].giro}
+
+1️⃣ ${userStates[from].preguntas[0]}`;
+
+      } else {
+        responseText = "❌ Opción inválida. Escribe A, B, C, D, E o F.";
       }
     }
 
-    else if (userStates[from].step === "queja_producto") {
+    else if (userStates[from].step === "cot_pregunta") {
 
-      console.log("Queja producto:", text);
+      userStates[from].respuestas.push(text);
+      userStates[from].index++;
 
-      responseText =
-`✅ Gracias por tu reporte.
-Daremos seguimiento inmediato.
+      if (userStates[from].index < userStates[from].preguntas.length) {
 
-Escribe 0 para volver al menú.`;
+        responseText =
+`${userStates[from].index + 1}️⃣ ${userStates[from].preguntas[userStates[from].index]}`;
 
-      userStates[from].step = "menu";
+      } else {
+
+        console.log("==== NUEVA COTIZACIÓN ====");
+        console.log("Cliente:", from);
+        console.log("Giro:", userStates[from].giro);
+        console.log("Respuestas:", userStates[from].respuestas);
+
+        responseText =
+`✅ Gracias por la información.
+
+Hemos registrado tu solicitud de cotización para ${userStates[from].giro}.
+Un asesor especializado se pondrá en contacto contigo a la brevedad.
+
+Agradecemos tu confianza.`;
+
+        userStates[from].step = "menu";
+      }
     }
 
-    else if (userStates[from].step === "queja_unidad") {
-
-      console.log("Queja unidad:", text);
-
-      responseText =
-`✅ Gracias por tu reporte.
-Indícanos ubicación, hora y número de unidad.
-
-Escribe 0 para volver al menú.`;
-
-      userStates[from].step = "menu";
-    }
-
+    // =============================
+    // 🔹 RESTO DE FLUJOS
+    // =============================
     else if (
       userStates[from].step === "info_productos" ||
-      userStates[from].step === "cotizacion" ||
       userStates[from].step === "ficha"
     ) {
 
@@ -313,7 +350,6 @@ Escribe 0 para volver al menú.`;
   }
 });
 
-// 🔹 IMPORTANTE PARA RENDER
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
