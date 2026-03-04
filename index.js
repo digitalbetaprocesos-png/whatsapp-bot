@@ -280,7 +280,13 @@ Escribe Q1 o Q2`;
         a: { nombre: "Hotel", preguntas: [
           "¿Cuántas habitaciones tiene el hotel?",
           "¿Qué áreas desea sanitizar?",
-          "¿Frecuencia requerida?"
+          "¿Frecuencia requerida?",
+           "Nombre de la persona que atenderá  a nuestro ejecutivo",
+          "Ciudad",
+          "Estado de la república:",
+          "Teléfono:",
+          "Correo electrónico:",
+          "¿Cuenta con alguna certificación?"
         ]},
         b: { nombre: "Restaurante", preguntas: [
           "¿Cuenta con cocina industrial?",
@@ -305,7 +311,13 @@ Escribe Q1 o Q2`;
         f: { nombre: "Escuela", preguntas: [
           "¿Con cuántos estudiantes cuentan?",
           "¿Número de salones?",
-          "¿Frecuencia?"
+          "¿Producto deseado?",
+          "Nombre de la persona que atenderá  a nuestro ejecutivo",
+          "Ciudad",
+          "Estado de la república:",
+          "Teléfono:",
+          "Correo electrónico:",
+          "¿Cuenta con alguna certificación?"
         ]}
       };
 
