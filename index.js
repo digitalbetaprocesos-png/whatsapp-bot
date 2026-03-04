@@ -108,7 +108,7 @@ app.post("/webhook", async (req, res) => {
       if (userMessage === "1") {
         userStates[from].step = "info_productos";
         responseText =
-`📦 Información de Productos
+`📦Información de Productos
 Comparte:
 Nombre:
 Empresa:
@@ -156,7 +156,7 @@ Escribe 0 para volver al menú.`;
       else if (userMessage === "5") {
         responseText =
 `🛒 Compras
-Contacto:
+Para ofrecernos tus productos comunicate a este correo:
 staffcompras@betaprocesos.com.mx
 Escribe 0 para volver al menú.`;
       }
@@ -179,9 +179,9 @@ Escribe 0 para volver al menú.`;
       else if (userMessage === "7") {
         responseText =
 `👥 Reclutamiento
-Envíanos tu CV a:
-fvazquez@betaprocesos.com.mx
-
+Hola. En Beta Procesos nos encanta tener nuevos talentos.
+Por favor, envíanos tu curriculum vitae a fvazquez@betaprocesos.com.mx  o visita nuestro facebook \ndando clic en el enlace y con gusto uno de nuestros reclutadores te atenderan. ¡Mucho éxito! 
+https://www.facebook.com/profile.php?id=61555196763207&locale=es_LA
 Escribe 0 para volver al menú.`;
       }
 
@@ -280,7 +280,7 @@ Escribe Q1 o Q2`;
         a: { nombre: "Hotel", preguntas: [
           "¿Cuántas habitaciones tiene el hotel?",
           "¿Qué tipo de suciedad desea limpiar?",
-          "¿En qué tipo de superficies se encuientra esta suciedad o desea aplicar el producto?",
+          "¿En qué tipo de superficies se encuentra esta suciedad o desea aplicar el producto?",
           "Para continuar con la cotizacion,\nPor favor proporcionanos la siguiente información,\nNombre de la persona que atenderá a nuestro ejecutivo",
           "Ciudad",
           "Estado de la república:",
@@ -291,7 +291,7 @@ Escribe Q1 o Q2`;
         b: { nombre: "Restaurante", preguntas: [
           "¿Con cuántas mesas cuentan?",
           "¿Tipo de grasa a eliminar?",
-          "¿En qué tipo de superficies se encuientra esta suciedad o desea aplicar el producto?",
+          "¿En qué tipo de superficies se encuentra esta suciedad o desea aplicar el producto?",
           "Para continuar con la cotizacion,\nPor favor proporcionanos la siguiente información,\nNombre de la persona que atenderá a nuestro ejecutivo",
           "Ciudad",
           "Estado de la república:",
@@ -302,7 +302,7 @@ Escribe Q1 o Q2`;
         c: { nombre: "Hospital", preguntas: [
           "¿Número de camas?",
           "¿Qué tipo de suciedad desea limpiar?",
-          "¿En qué tipo de superficies se encuientra esta suciedad o desea aplicar el producto?",
+          "¿En qué tipo de superficies se encuentra esta suciedad o desea aplicar el producto?",
           "Para continuar con la cotizacion,\nPor favor proporcionanos la siguiente información,\nNombre de la persona que atenderá a nuestro ejecutivo",
           "Ciudad",
           "Estado de la república:",
@@ -313,7 +313,7 @@ Escribe Q1 o Q2`;
         d: { nombre: "Metalmecánica", preguntas: [
           "¿Con cuántos empleados cuentan?",
           "¿Qué tipo de suciedad desea limpiar?",
-          "¿En qué tipo de superficies se encuientra esta suciedad o desea aplicar el producto?",
+          "¿En qué tipo de superficies se encuentra esta suciedad o desea aplicar el producto?",
           "Para continuar con la cotizacion,\nPor favor proporcionanos la siguiente información,\nNombre de la persona que atenderá a nuestro ejecutivo",
           "Ciudad",
           "Estado de la república:",
@@ -324,7 +324,7 @@ Escribe Q1 o Q2`;
         e: { nombre: "Invernadero", preguntas: [
           "¿Con cuántas hectareas cuentan?",
           "¿Qué tipo de suciedad desea limpiar?",
-          "¿En qué tipo de superficies se encuientra esta suciedad o desea aplicar el producto?",
+          "¿En qué tipo de superficies se encuentra esta suciedad o desea aplicar el producto?",
           "Para continuar con la cotizacion,\nPor favor proporcionanos la siguiente información,\nNombre de la persona que atenderá a nuestro ejecutivo",
           "Ciudad",
           "Estado de la república:",
@@ -336,7 +336,7 @@ Escribe Q1 o Q2`;
           "¿Con cuántos estudiantes cuentan?",
           "¿Número de salones?",
           "¿Qué tipo de suciedad desea limpiar?",
-          "¿En qué tipo de superficies se encuientra esta suciedad o desea aplicar el producto?",
+          "¿En qué tipo de superficies se encuentra esta suciedad o desea aplicar el producto?",
           "Para continuar con la cotizacion,\nPor favor proporcionanos la siguiente información,\nNombre de la persona que atenderá a nuestro ejecutivo",
           "Ciudad",
           "Estado de la república:",
