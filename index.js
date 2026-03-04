@@ -140,7 +140,7 @@ Escribe 0 para volver al menú.`;
       else if (userMessage === "3") {
         responseText =
 `🧾 Facturación
-Envíanos tu constancia de situación fiscal y en caso de refacturación el número de factura al correo:
+Envíanos tu constancia de situación fiscal,ticket o comprobante de compra y en caso de refacturación el número de factura al correo:
 info@betaprocesos.com.mx
 
 Escribe 0 para volver al menú.`;
@@ -211,9 +211,65 @@ Escribe Q1 o Q2`;
       }
 
       else {
-        responseText = mainMenu;
+        responseText = " ";
       }
     }
+    
+    // =============================
+    // 🔹 PROTOCOLO QUEJAS
+    // =============================
+    else if (userStates[from].step === "quejas") {
+
+      if (userMessage === "q1") {
+        userStates[from].step = "queja_producto";
+        responseText = "📝 Escribe tu queja sobre el producto.";
+
+      } else if (userMessage === "q2") {
+        userStates[from].step = "queja_unidad";
+        responseText = "📝 Escribe tu queja sobre la unidad.";
+      } else {
+        responseText = "❌ Opción inválida. Escribe Q1 o Q2.";
+      }
+    }
+
+    // =============================
+    // 🔹 CAPTURAR QUEJA
+    // =============================
+    else if (
+      userStates[from].step === "queja_producto"
+    ) {
+      userStates[from].step = "queja_producto_registrada";
+      console.log("Queja registrada:", text);
+
+      responseText =
+     "✅ Hola, buen día.Gracias por hacernos llegar este reporte.\nLamentamos lo ocurrido y valoramos mucho este tipo de comentarios,ya que nos ayudan a mejorar.";
+
+      userStates[from].step = "menu";
+    }else if (
+      userStates[from].step === "queja_producto"
+    ) {
+     
+      console.log("Respuesta Queja registrada:", text);
+
+      responseText =
+     "Gracias por colaborar con los datos.";
+
+      userStates[from].step = "menu";
+    }
+    
+
+    else if (
+      userStates[from].step === "queja_unidad"
+    ) {
+
+      console.log("Queja registrada:", text);
+
+      responseText = 
+     "✅ Hola, buen día.Gracias por hacernos llegar este reporte.\nLamentamos lo ocurrido y valoramos mucho este tipo de comentarios,ya que nos ayudan a mejorar y a reforzar la seguridad vial.\n¿Podría apoyarnos indicándonos la ubicación exacta, la hora aproximada del incidente y, en caso de haberlo identificado, el número de unidad? Con esta información podremos dar seguimiento puntual con el área correspondiente y tomar las medidas necesarias.\nQuedamos a sus órdenes y le reiteramos nuestro compromiso con la conducción responsable.";
+
+      userStates[from].step = "menu";
+    }
+
 
     // =============================
     // 🔹 COTIZACIÓN DINÁMICA
