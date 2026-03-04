@@ -329,7 +329,16 @@ Escribe Q1 o Q2`;
         responseText = "❌ Opción inválida. Escribe A, B, C, D, E o F.";
       }
     }
-     // 🔹 Validación especial primera respuesta
+     
+    // =============================
+    // 🔹 COT_PREGUNTA (CORREGIDO)
+    // =============================
+    else if (userStates[from].step === "cot_pregunta") {
+
+      userStates[from].respuestas.push(text);
+      userStates[from].index++;
+
+      // 🔹 Validación especial primera respuesta
       if (userStates[from].index === 1) {
 
         const numero = parseInt(text);
@@ -345,45 +354,39 @@ Escribe Q1 o Q2`;
           responseText =
 `✨ Tenemos la opción perfecta para ti.
 
-Visita nuestra tienda virtual dando clic en el siguiente enlace y recibe tus productos a domicilio.
-
+Visita nuestra tienda virtual:
 https://tienda.betaprocesos.com.mx/
 
-Beta, Brillantez Excepcional, Tu Aliado en limpieza profesional :)`;
+Beta, Brillantez Excepcional :)`;
 
           userStates[from].step = "menu";
         }
+      }
 
+      if (userStates[from].step === "cot_pregunta") {
 
-    else if (userStates[from].step === "cot_pregunta") {
+        if (userStates[from].index < userStates[from].preguntas.length) {
 
-      userStates[from].respuestas.push(text);
-      userStates[from].index++;
-
-      if (userStates[from].index < userStates[from].preguntas.length) {
-
-        responseText =
+          responseText =
 `${userStates[from].index + 1}️⃣ ${userStates[from].preguntas[userStates[from].index]}`;
 
-      } else {
+        } else {
 
-        console.log("==== NUEVA COTIZACIÓN ====");
-        console.log("Cliente:", from);
-        console.log("Giro:", userStates[from].giro);
-        console.log("Respuestas:", userStates[from].respuestas);
+          console.log("==== NUEVA COTIZACIÓN ====");
+          console.log("Cliente:", from);
+          console.log("Giro:", userStates[from].giro);
+          console.log("Respuestas:", userStates[from].respuestas);
 
-        responseText =
+          responseText =
 `✅ Gracias por la información.
 
-Hemos registrado tu solicitud de cotización para ${userStates[from].giro}.
-Un asesor especializado se pondrá en contacto contigo a la brevedad.
+Hemos registrado tu solicitud.
+Un asesor se pondrá en contacto contigo.`;
 
-Agradecemos tu confianza.`;
-
-        userStates[from].step = "menu";
+          userStates[from].step = "menu";
+        }
       }
     }
-
     // =============================
     // 🔹 RESTO DE FLUJOS
     // =============================
