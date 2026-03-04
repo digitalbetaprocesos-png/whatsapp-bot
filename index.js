@@ -279,9 +279,9 @@ Escribe Q1 o Q2`;
       const preguntasPorGiro = {
         a: { nombre: "Hotel", preguntas: [
           "¿Cuántas habitaciones tiene el hotel?",
-          "¿Qué áreas desea sanitizar?",
-          "¿Frecuencia requerida?",
-           "Nombre de la persona que atenderá  a nuestro ejecutivo",
+          "¿Qué tipo de suciedad desea limpiar?",
+          "¿En qué tipo de superficies se encuientra esta suciedad o desea aplicar el producto?",
+          "Para continuar con la cotizacion,\nPor favor proporcionanos la siguiente información,\nNombre de la persona que atenderá a nuestro ejecutivo",
           "Ciudad",
           "Estado de la república:",
           "Teléfono:",
@@ -289,35 +289,61 @@ Escribe Q1 o Q2`;
           "¿Cuenta con alguna certificación?"
         ]},
         b: { nombre: "Restaurante", preguntas: [
-          "¿Cuenta con cocina industrial?",
+          "¿Con cuántas mesas cuentan?",
           "¿Tipo de grasa a eliminar?",
-          "¿Frecuencia de limpieza?"
-        ]},
-        c: { nombre: "Hospital", preguntas: [
-          "¿Número de camas?",
-          "¿Requiere desinfectante grado hospitalario?",
-          "¿Áreas críticas?"
-        ]},
-        d: { nombre: "Metalmecánica", preguntas: [
-          "¿Con cuántos empleados cuentan?",
-          "¿Área aproximada?",
-          "¿Frecuencia?"
-        ]},
-        e: { nombre: "Invernadero", preguntas: [
-          "¿Tipo de cultivo?",
-          "¿Con cuántas hectareas cuentan?",
-          "¿Problema principal?"
-        ]},
-        f: { nombre: "Escuela", preguntas: [
-          "¿Con cuántos estudiantes cuentan?",
-          "¿Número de salones?",
-          "¿Producto deseado?",
-          "Nombre de la persona que atenderá  a nuestro ejecutivo",
+          "¿En qué tipo de superficies se encuientra esta suciedad o desea aplicar el producto?",
+          "Para continuar con la cotizacion,\nPor favor proporcionanos la siguiente información,\nNombre de la persona que atenderá a nuestro ejecutivo",
           "Ciudad",
           "Estado de la república:",
           "Teléfono:",
           "Correo electrónico:",
           "¿Cuenta con alguna certificación?"
+        ]},
+        c: { nombre: "Hospital", preguntas: [
+          "¿Número de camas?",
+          "¿Qué tipo de suciedad desea limpiar?",
+          "¿En qué tipo de superficies se encuientra esta suciedad o desea aplicar el producto?",
+          "Para continuar con la cotizacion,\nPor favor proporcionanos la siguiente información,\nNombre de la persona que atenderá a nuestro ejecutivo",
+          "Ciudad",
+          "Estado de la república:",
+          "Teléfono:",
+          "Correo electrónico:",
+          "¿Cuenta con alguna certificación?"
+        ]},
+        d: { nombre: "Metalmecánica", preguntas: [
+          "¿Con cuántos empleados cuentan?",
+          "¿Qué tipo de suciedad desea limpiar?",
+          "¿En qué tipo de superficies se encuientra esta suciedad o desea aplicar el producto?",
+          "Para continuar con la cotizacion,\nPor favor proporcionanos la siguiente información,\nNombre de la persona que atenderá a nuestro ejecutivo",
+          "Ciudad",
+          "Estado de la república:",
+          "Teléfono:",
+          "Correo electrónico:",
+          "¿Cuenta con alguna certificación?"
+        ]},
+        e: { nombre: "Invernadero", preguntas: [
+          "¿Con cuántas hectareas cuentan?",
+          "¿Qué tipo de suciedad desea limpiar?",
+          "¿En qué tipo de superficies se encuientra esta suciedad o desea aplicar el producto?",
+          "Para continuar con la cotizacion,\nPor favor proporcionanos la siguiente información,\nNombre de la persona que atenderá a nuestro ejecutivo",
+          "Ciudad",
+          "Estado de la república:",
+          "Teléfono:",
+          "Correo electrónico:",
+          "¿Cuenta con alguna certificación?"
+        ]},
+        f: { nombre: "Escuela", preguntas: [
+          "¿Con cuántos estudiantes cuentan?",
+          "¿Número de salones?",
+          "¿Qué tipo de suciedad desea limpiar?",
+          "¿En qué tipo de superficies se encuientra esta suciedad o desea aplicar el producto?",
+          "Para continuar con la cotizacion,\nPor favor proporcionanos la siguiente información,\nNombre de la persona que atenderá a nuestro ejecutivo",
+          "Ciudad",
+          "Estado de la república:",
+          "Teléfono:",
+          "Correo electrónico:",
+          "¿Cuenta con alguna certificación?"
+
         ]}
       };
 
