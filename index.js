@@ -211,7 +211,7 @@ Escribe Q1 o Q2`;
       }
 
       else {
-        responseText = " ";
+        responseText = "Para volver a menu escribe 0";
       }
     }
     
@@ -293,17 +293,17 @@ Escribe Q1 o Q2`;
           "¿Áreas críticas?"
         ]},
         d: { nombre: "Metalmecánica", preguntas: [
-          "¿Tipo de residuo?",
+          "¿Con cuántos empleados cuentan?",
           "¿Área aproximada?",
           "¿Frecuencia?"
         ]},
         e: { nombre: "Invernadero", preguntas: [
           "¿Tipo de cultivo?",
-          "¿Área en m²?",
+          "¿Con cuántas hectareas cuentan?",
           "¿Problema principal?"
         ]},
         f: { nombre: "Escuela", preguntas: [
-          "¿Nivel educativo?",
+          "¿Con cuántos estudiantes cuentan?",
           "¿Número de salones?",
           "¿Frecuencia?"
         ]}
@@ -329,6 +329,31 @@ Escribe Q1 o Q2`;
         responseText = "❌ Opción inválida. Escribe A, B, C, D, E o F.";
       }
     }
+     // 🔹 Validación especial primera respuesta
+      if (userStates[from].index === 1) {
+
+        const numero = parseInt(text);
+
+        if (
+          (userStates[from].giro === "Hotel" && numero <= 40) ||
+          (userStates[from].giro === "Hospital" && numero <= 20) ||
+          (userStates[from].giro === "Metalmecánica" && numero <= 15) ||
+          (userStates[from].giro === "Invernadero" && numero <= 1) ||
+          (userStates[from].giro === "Escuela" && numero <= 200)
+        ) {
+
+          responseText =
+`✨ Tenemos la opción perfecta para ti.
+
+Visita nuestra tienda virtual dando clic en el siguiente enlace y recibe tus productos a domicilio.
+
+https://tienda.betaprocesos.com.mx/
+
+Beta, Brillantez Excepcional, Tu Aliado en limpieza profesional :)`;
+
+          userStates[from].step = "menu";
+        }
+
 
     else if (userStates[from].step === "cot_pregunta") {
 
