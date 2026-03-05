@@ -37,7 +37,7 @@ ${respuestas.map((r,i)=>`${i+1}. ${r}`).join("\n")}
 
   await transporter.sendMail({
     from: process.env.EMAIL_USER,
-    to: "ventas@betaprocesos.com.mx",
+    to: "diegogallegosca03@gmail.com",
     subject: "Nueva Cotización WhatsApp",
     text: contenido
   });
