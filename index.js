@@ -1,6 +1,5 @@
 const express = require("express");
 const axios = require("axios");
-const nodemailer = require("nodemailer");
 
 const app = express();
 app.use(express.json());
@@ -9,6 +8,10 @@ app.use(express.json());
 const TOKEN = process.env.WHATSAPP_TOKEN;
 const PHONE_NUMBER_ID = process.env.PHONE_NUMBER_ID;
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
+const EMAIL_PASS = process.env.EMAIL_PASS;
+const EMAIL_USER = process.env.EMAIL_USER;
+
+
 
 // 🔹 CONFIGURACIÓN EMAIL
 const transporter = nodemailer.createTransport({
@@ -33,7 +36,7 @@ ${respuestas.map((r,i)=>`${i+1}. ${r}`).join("\n")}
 
   await transporter.sendMail({
     from: process.env.EMAIL_USER,
-    to: "diegogallegosca03@gmail.com",
+    to: "ventas@betaprocesos.com.mx",
     subject: "Nueva Cotización WhatsApp",
     text: contenido
   });
@@ -41,7 +44,6 @@ ${respuestas.map((r,i)=>`${i+1}. ${r}`).join("\n")}
 }
 
 const userStates = {};
-
 // =============================
 // 🔹 VERIFICACIÓN WEBHOOK
 // =============================
@@ -123,11 +125,17 @@ app.post("/webhook", async (req, res) => {
 8️⃣ Dirección tienda Celaya
 9️⃣ Quejas`;
 
+    // =============================
+    // 🔹 VOLVER AL MENÚ
+    // =============================
     if (userMessage === "0") {
       userStates[from].step = "menu";
       responseText = mainMenu;
     }
 
+    // =============================
+    // 🔹 MENÚ PRINCIPAL
+    // =============================
     else if (userStates[from].step === "menu") {
 
       if (userMessage === "1") {
@@ -205,7 +213,8 @@ Escribe 0 para volver al menú.`;
         responseText =
 `👥 Reclutamiento
 Hola. En Beta Procesos nos encanta tener nuevos talentos.
-Por favor, envíanos tu curriculum vitae a fvazquez@betaprocesos.com.mx  
+Por favor, envíanos tu curriculum vitae a fvazquez@betaprocesos.com.mx  o visita nuestro facebook 
+dando clic en el enlace y con gusto uno de nuestros reclutadores te atenderan. ¡Mucho éxito! 
 https://www.facebook.com/profile.php?id=61555196763207&locale=es_LA
 Escribe 0 para volver al menú.`;
       }
@@ -240,6 +249,46 @@ Escribe Q1 o Q2`;
       }
     }
 
+    // =============================
+    // 🔹 PROTOCOLO QUEJAS
+    // =============================
+    else if (userStates[from].step === "quejas") {
+
+      if (userMessage === "q1") {
+        userStates[from].step = "queja_producto";
+        responseText = "📝 Escribe tu queja sobre el producto.";
+
+      } else if (userMessage === "q2") {
+        userStates[from].step = "queja_unidad";
+        responseText = "📝 Escribe tu queja sobre la unidad.";
+      } else {
+        responseText = "❌ Opción inválida. Escribe Q1 o Q2.";
+      }
+    }
+
+    else if (userStates[from].step === "queja_producto") {
+
+      console.log("Queja registrada:", text);
+
+      responseText =
+"✅ Hola, buen día.Gracias por hacernos llegar este reporte.\nLamentamos lo ocurrido y valoramos mucho este tipo de comentarios,ya que nos ayudan a mejorar.";
+
+      userStates[from].step = "menu";
+    }
+
+    else if (userStates[from].step === "queja_unidad") {
+
+      console.log("Queja registrada:", text);
+
+      responseText = 
+"✅ Hola, buen día.Gracias por hacernos llegar este reporte.\nLamentamos lo ocurrido y valoramos mucho este tipo de comentarios,ya que nos ayudan a mejorar y a reforzar la seguridad vial.\n¿Podría apoyarnos indicándonos la ubicación exacta, la hora aproximada del incidente y, en caso de haberlo identificado, el número de unidad? Con esta información podremos dar seguimiento puntual con el área correspondiente y tomar las medidas necesarias.\nQuedamos a sus órdenes y le reiteramos nuestro compromiso con la conducción responsable.";
+
+      userStates[from].step = "menu";
+    }
+
+    // =============================
+    // 🔹 COTIZACIÓN DINÁMICA
+    // =============================
     else if (userStates[from].step === "cotizacion_menu") {
 
       const preguntasPorGiro = {
@@ -247,12 +296,68 @@ Escribe Q1 o Q2`;
           "¿Cuántas habitaciones tiene el hotel?",
           "¿Qué tipo de suciedad desea limpiar?",
           "¿En qué tipo de superficies se encuentra esta suciedad o desea aplicar el producto?",
-          "Nombre del contacto",
+          "Para continuar con la cotizacion,\nPor favor proporcionanos la siguiente información,\nNombre de la persona que atenderá a nuestro ejecutivo",
           "Ciudad",
-          "Estado",
-          "Teléfono",
-          "Correo",
-          "¿Cuenta con certificación?"
+          "Estado de la república:",
+          "Teléfono:",
+          "Correo electrónico:",
+          "¿Cuenta con alguna certificación?"
+        ]},
+        b: { nombre: "Restaurante", preguntas: [
+          "¿Con cuántas mesas cuentan?",
+          "¿Tipo de grasa a eliminar?",
+          "¿En qué tipo de superficies se encuentra esta suciedad o desea aplicar el producto?",
+          "Para continuar con la cotizacion,\nPor favor proporcionanos la siguiente información,\nNombre de la persona que atenderá a nuestro ejecutivo",
+          "Ciudad",
+          "Estado de la república:",
+          "Teléfono:",
+          "Correo electrónico:",
+          "¿Cuenta con alguna certificación?"
+        ]},
+        c: { nombre: "Hospital", preguntas: [
+          "¿Número de cuartos?",
+          "¿Qué tipo de suciedad desea limpiar?",
+          "¿En qué tipo de superficies se encuentra esta suciedad o desea aplicar el producto?",
+          "Para continuar con la cotizacion,\nPor favor proporcionanos la siguiente información,\nNombre de la persona que atenderá a nuestro ejecutivo",
+          "Ciudad",
+          "Estado de la república:",
+          "Teléfono:",
+          "Correo electrónico:",
+          "¿Cuenta con alguna certificación?"
+        ]},
+        d: { nombre: "Metalmecánica", preguntas: [
+          "¿Con cuántos empleados cuentan?",
+          "¿Qué tipo de suciedad desea limpiar?",
+          "¿En qué tipo de superficies se encuentra esta suciedad o desea aplicar el producto?",
+          "Para continuar con la cotizacion,\nPor favor proporcionanos la siguiente información,\nNombre de la persona que atenderá a nuestro ejecutivo",
+          "Ciudad",
+          "Estado de la república:",
+          "Teléfono:",
+          "Correo electrónico:",
+          "¿Cuenta con alguna certificación?"
+        ]},
+        e: { nombre: "Invernadero", preguntas: [
+          "¿Con cuántas hectareas cuentan?",
+          "¿Qué tipo de suciedad desea limpiar?",
+          "¿En qué tipo de superficies se encuentra esta suciedad o desea aplicar el producto?",
+          "Para continuar con la cotizacion,\nPor favor proporcionanos la siguiente información,\nNombre de la persona que atenderá a nuestro ejecutivo",
+          "Ciudad",
+          "Estado de la república:",
+          "Teléfono:",
+          "Correo electrónico:",
+          "¿Cuenta con alguna certificación?"
+        ]},
+        f: { nombre: "Escuela", preguntas: [
+          "¿Con cuántos estudiantes cuentan?",
+          "¿Número de salones?",
+          "¿Qué tipo de suciedad desea limpiar?",
+          "¿En qué tipo de superficies se encuentra esta suciedad o desea aplicar el producto?",
+          "Para continuar con la cotizacion,\nPor favor proporcionanos la siguiente información,\nNombre de la persona que atenderá a nuestro ejecutivo",
+          "Ciudad",
+          "Estado de la república:",
+          "Teléfono:",
+          "Correo electrónico:",
+          "¿Cuenta con alguna certificación?"
         ]}
       };
 
@@ -272,6 +377,8 @@ Escribe Q1 o Q2`;
 
 1️⃣ ${userStates[from].preguntas[0]}`;
 
+      } else {
+        responseText = "❌ Opción inválida. Escribe A, B, C, D, E o F.";
       }
     }
 
@@ -291,13 +398,11 @@ Escribe Q1 o Q2`;
         console.log("Cliente:", from);
         console.log("Giro:", userStates[from].giro);
         console.log("Respuestas:", userStates[from].respuestas);
-
         await enviarCorreoCotizacion(
           from,
           userStates[from].giro,
           userStates[from].respuestas
         );
-
         responseText =
 `✅ Gracias por la información.
 
@@ -306,6 +411,22 @@ Un asesor se pondrá en contacto contigo.`;
 
         userStates[from].step = "menu";
       }
+    }
+
+    else if (
+      userStates[from].step === "info_productos" ||
+      userStates[from].step === "ficha"
+    ) {
+
+      console.log("Solicitud:", text);
+
+      responseText =
+`✅ Hemos recibido tu información.
+Un asesor se pondrá en contacto contigo.
+
+Escribe 0 para volver al menú.`;
+
+      userStates[from].step = "menu";
     }
 
     if (responseText !== "") {
