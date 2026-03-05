@@ -1,6 +1,28 @@
 const express = require("express");
 const axios = require("axios");
 const nodemailer = require("nodemailer");
+const mongoose = require("mongoose");
+
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
+
+mongoose.connection.on("connected", () => {
+  console.log("📦 MongoDB conectado");
+});
+const CotizacionSchema = new mongoose.Schema({
+  cliente: String,
+  telefono: String,
+  giro: String,
+  respuestas: [String],
+  fecha: {
+    type: Date,
+    default: Date.now
+  }
+});
+
+const Cotizacion = mongoose.model("Cotizacion", CotizacionSchema);
 
 const app = express();
 app.use(express.json());
@@ -34,7 +56,7 @@ const transporter = nodemailer.createTransport({
 });
 async function enviarCorreoCotizacion(cliente, giro, respuestas) {
 
-  const contenido = `
+const contenido = `
 Nueva solicitud de cotización
 
 Cliente: ${cliente}
@@ -297,7 +319,7 @@ Escribe Q1 o Q2`;
     }
 
     // =============================
-    // 🔹 COTIZACIÓN DINÁMICA
+    //  COTIZACIÓN DINÁMICA
     // =============================
     else if (userStates[from].step === "cotizacion_menu") {
 
@@ -408,6 +430,12 @@ Escribe Q1 o Q2`;
         console.log("Cliente:", from);
         console.log("Giro:", userStates[from].giro);
         console.log("Respuestas:", userStates[from].respuestas);
+        await Cotizacion.create({
+  cliente: from,
+  telefono: raw,
+  giro: userStates[from].giro,
+  respuestas: userStates[from].respuestas
+});
         await enviarCorreoCotizacion(
           from,
           userStates[from].giro,
