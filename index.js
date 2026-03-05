@@ -180,7 +180,8 @@ Escribe 0 para volver al menú.`;
         responseText =
 `👥 Reclutamiento
 Hola. En Beta Procesos nos encanta tener nuevos talentos.
-Por favor, envíanos tu curriculum vitae a fvazquez@betaprocesos.com.mx  o visita nuestro facebook \ndando clic en el enlace y con gusto uno de nuestros reclutadores te atenderan. ¡Mucho éxito! 
+Por favor, envíanos tu curriculum vitae a fvazquez@betaprocesos.com.mx  o visita nuestro facebook 
+dando clic en el enlace y con gusto uno de nuestros reclutadores te atenderan. ¡Mucho éxito! 
 https://www.facebook.com/profile.php?id=61555196763207&locale=es_LA
 Escribe 0 para volver al menú.`;
       }
@@ -211,10 +212,10 @@ Escribe Q1 o Q2`;
       }
 
       else {
-        responseText = "Para volver a menu escribe 0";
+        responseText = mainMenu;
       }
     }
-    
+
     // =============================
     // 🔹 PROTOCOLO QUEJAS
     // =============================
@@ -232,44 +233,25 @@ Escribe Q1 o Q2`;
       }
     }
 
-    // =============================
-    // 🔹 CAPTURAR QUEJA
-    // =============================
-    else if (
-      userStates[from].step === "queja_producto"
-    ) {
-      userStates[from].step = "queja_producto_registrada";
+    else if (userStates[from].step === "queja_producto") {
+
       console.log("Queja registrada:", text);
 
       responseText =
-     "✅ Hola, buen día.Gracias por hacernos llegar este reporte.\nLamentamos lo ocurrido y valoramos mucho este tipo de comentarios,ya que nos ayudan a mejorar.";
-
-      userStates[from].step = "menu";
-    }else if (
-      userStates[from].step === "queja_producto"
-    ) {
-     
-      console.log("Respuesta Queja registrada:", text);
-
-      responseText =
-     "Gracias por colaborar con los datos.";
+"✅ Hola, buen día.Gracias por hacernos llegar este reporte.\nLamentamos lo ocurrido y valoramos mucho este tipo de comentarios,ya que nos ayudan a mejorar.";
 
       userStates[from].step = "menu";
     }
-    
 
-    else if (
-      userStates[from].step === "queja_unidad"
-    ) {
+    else if (userStates[from].step === "queja_unidad") {
 
       console.log("Queja registrada:", text);
 
       responseText = 
-     "✅ Hola, buen día.Gracias por hacernos llegar este reporte.\nLamentamos lo ocurrido y valoramos mucho este tipo de comentarios,ya que nos ayudan a mejorar y a reforzar la seguridad vial.\n¿Podría apoyarnos indicándonos la ubicación exacta, la hora aproximada del incidente y, en caso de haberlo identificado, el número de unidad? Con esta información podremos dar seguimiento puntual con el área correspondiente y tomar las medidas necesarias.\nQuedamos a sus órdenes y le reiteramos nuestro compromiso con la conducción responsable.";
+"✅ Hola, buen día.Gracias por hacernos llegar este reporte.\nLamentamos lo ocurrido y valoramos mucho este tipo de comentarios,ya que nos ayudan a mejorar y a reforzar la seguridad vial.\n¿Podría apoyarnos indicándonos la ubicación exacta, la hora aproximada del incidente y, en caso de haberlo identificado, el número de unidad? Con esta información podremos dar seguimiento puntual con el área correspondiente y tomar las medidas necesarias.\nQuedamos a sus órdenes y le reiteramos nuestro compromiso con la conducción responsable.";
 
       userStates[from].step = "menu";
     }
-
 
     // =============================
     // 🔹 COTIZACIÓN DINÁMICA
@@ -343,7 +325,6 @@ Escribe Q1 o Q2`;
           "Teléfono:",
           "Correo electrónico:",
           "¿Cuenta con alguna certificación?"
-
         ]}
       };
 
@@ -367,68 +348,34 @@ Escribe Q1 o Q2`;
         responseText = "❌ Opción inválida. Escribe A, B, C, D, E o F.";
       }
     }
-     
-    // =============================
-    // 🔹 COT_PREGUNTA (CORREGIDO)
-    // =============================
+
     else if (userStates[from].step === "cot_pregunta") {
 
       userStates[from].respuestas.push(text);
       userStates[from].index++;
 
-      // 🔹 Validación especial primera respuesta
-      if (userStates[from].index === 1) {
+      if (userStates[from].index < userStates[from].preguntas.length) {
 
-        const numero = parseInt(text);
-
-        if (
-          (userStates[from].giro === "Hotel" && numero <= 39) ||
-          (userStates[from].giro === "Restaurante" && numero <= 19) ||
-          (userStates[from].giro === "Hospital" && numero <= 20) ||
-          (userStates[from].giro === "Metalmecánica" && numero <= 199) ||
-          (userStates[from].giro === "Invernadero" && numero <= 3) ||
-          (userStates[from].giro === "Escuela" && numero <= 999)
-        ) {
-
-          responseText =
-`✨ Tenemos la opción perfecta para ti.
-
-Visita nuestra tienda virtual:
-https://tienda.betaprocesos.com.mx/
-
-Beta, Brillantez Excepcional :)`;
-
-          userStates[from].step = "menu";
-        }
-      }
-
-      if (userStates[from].step === "cot_pregunta") {
-
-        if (userStates[from].index < userStates[from].preguntas.length) {
-
-          responseText =
+        responseText =
 `${userStates[from].index + 1}️⃣ ${userStates[from].preguntas[userStates[from].index]}`;
 
-        } else {
+      } else {
 
-          console.log("==== NUEVA COTIZACIÓN ====");
-          console.log("Cliente:", from);
-          console.log("Giro:", userStates[from].giro);
-          console.log("Respuestas:", userStates[from].respuestas);
+        console.log("==== NUEVA COTIZACIÓN ====");
+        console.log("Cliente:", from);
+        console.log("Giro:", userStates[from].giro);
+        console.log("Respuestas:", userStates[from].respuestas);
 
-          responseText =
+        responseText =
 `✅ Gracias por la información.
 
 Hemos registrado tu solicitud.
 Un asesor se pondrá en contacto contigo.`;
 
-          userStates[from].step = "menu";
-        }
+        userStates[from].step = "menu";
       }
     }
-    // =============================
-    // 🔹 RESTO DE FLUJOS
-    // =============================
+
     else if (
       userStates[from].step === "info_productos" ||
       userStates[from].step === "ficha"
@@ -445,9 +392,6 @@ Escribe 0 para volver al menú.`;
       userStates[from].step = "menu";
     }
 
-    // =============================
-    // 🔹 ENVIAR RESPUESTA
-    // =============================
     if (responseText !== "") {
       await axios.post(
         `https://graph.facebook.com/v19.0/${PHONE_NUMBER_ID}/messages`,
