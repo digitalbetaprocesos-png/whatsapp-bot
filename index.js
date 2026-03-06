@@ -76,11 +76,13 @@ async function sendMessage(to, message) {
 async function mensajeCierre(from){
 
 await sendMessage(from,
-`Gracias por contactar a Beta.
+`✅ Tu solicitud ha sido registrada.
 
-Nuestro equipo revisará tu solicitud y se pondrá en contacto contigo lo antes posible.
-Mientras tanto, puedes conocer más sobre nuestras soluciones en:
-🌐 www.betaprocesos.com.mx`
+Un asesor de *Beta Procesos* revisará tu información y se pondrá en contacto contigo pronto.
+
+Si deseas regresar al menú principal escribe *0*.
+
+¡Gracias por contactarnos!`
 );
 
 }
@@ -143,9 +145,7 @@ raw.slice(5,8)+" "+
 raw.slice(8);
 
 if (!userStates[from]) {
-
 userStates[from] = { step: "menu" };
-
 }
 
 const mainMenu = `Hola 👋
@@ -158,6 +158,59 @@ Selecciona una opción:
 3️⃣ Información de Betita
 4️⃣ Solicitar cotización
 5️⃣ Reclutamiento`;
+
+
+// =============================
+// SALUDO AUTOMÁTICO
+// =============================
+
+const saludos = [
+"hola",
+"buenas",
+"buenos dias",
+"buenos días",
+"buen dia",
+"buen día",
+"buenas tardes",
+"buenas noches",
+"informacion",
+"información",
+"info"
+];
+
+if (saludos.includes(msg)) {
+
+userStates[from].step = "menu";
+
+await sendMessage(from, mainMenu);
+
+return res.sendStatus(200);
+
+}
+
+
+// =============================
+// DESPEDIDA AUTOMÁTICA
+// =============================
+
+const despedidas = [
+"gracias",
+"muchas gracias",
+"ok",
+"vale",
+"perfecto",
+"listo",
+"esta bien",
+"está bien"
+];
+
+if (despedidas.includes(msg)) {
+
+await mensajeCierre(from);
+
+return res.sendStatus(200);
+
+}
 
 
 // =============================
