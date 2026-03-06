@@ -1,27 +1,5 @@
 const express = require("express");
 const axios = require("axios");
-const nodemailer = require("nodemailer");
-const mongoose = require("mongoose");
-
-mongoose.connect(process.env.MONGO_URI)
-.then(() => console.log("MongoDB conectado"))
-.catch(err => console.error(err));
-
-mongoose.connection.on("connected", () => {
-  console.log("📦 MongoDB conectado");
-});
-const CotizacionSchema = new mongoose.Schema({
-  cliente: String,
-  telefono: String,
-  giro: String,
-  respuestas: [String],
-  fecha: {
-    type: Date,
-    default: Date.now
-  }
-});
-
-const Cotizacion = mongoose.model("Cotizacion", CotizacionSchema);
 
 const app = express();
 app.use(express.json());
@@ -30,469 +8,356 @@ app.use(express.json());
 const TOKEN = process.env.WHATSAPP_TOKEN;
 const PHONE_NUMBER_ID = process.env.PHONE_NUMBER_ID;
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
-const EMAIL_PASS = process.env.EMAIL_PASS;
-const EMAIL_USER = process.env.EMAIL_USER;
-
-
-
-// 🔹 CONFIGURACIÓN EMAIL
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false,
-  family: 4,
-  requireTLS: true,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  },
-  tls: {
-    ciphers: "SSLv3"
-  },
-  connectionTimeout: 10000,
-  greetingTimeout: 10000,
-  socketTimeout: 10000
-});
-async function enviarCorreoCotizacion(cliente, giro, respuestas) {
-
-const contenido = `
-Nueva solicitud de cotización
-
-Cliente: ${cliente}
-Giro: ${giro}
-
-Respuestas:
-${respuestas.map((r,i)=>`${i+1}. ${r}`).join("\n")}
-`;
-
-  await transporter.sendMail({
-    from: process.env.EMAIL_USER,
-    to: "diegogallegosca03@gmail.com",
-    subject: "Nueva Cotización WhatsApp",
-    text: contenido
-  });
-
-}
 
 const userStates = {};
+
 // =============================
 // 🔹 VERIFICACIÓN WEBHOOK
 // =============================
 app.get("/webhook", (req, res) => {
-  const mode = req.query["hub.mode"];
-  const token = req.query["hub.verify_token"];
-  const challenge = req.query["hub.challenge"];
 
-  if (mode && token === VERIFY_TOKEN) {
-    console.log("Webhook verificado");
-    return res.status(200).send(challenge);
-  } else {
-    return res.sendStatus(403);
-  }
+let mode = req.query["hub.mode"];
+let token = req.query["hub.verify_token"];
+let challenge = req.query["hub.challenge"];
+
+if (mode && token === VERIFY_TOKEN) {
+    res.status(200).send(challenge);
+} else {
+    res.sendStatus(403);
+}
+
 });
 
 // =============================
-// 🔹 RECIBIR MENSAJES
+// 🔹 ENVIAR MENSAJE
+// =============================
+async function sendMessage(to, text) {
+
+await axios.post(
+`https://graph.facebook.com/v18.0/${PHONE_NUMBER_ID}/messages`,
+{
+    messaging_product: "whatsapp",
+    to: to,
+    text: { body: text }
+},
+{
+headers: {
+Authorization: `Bearer ${TOKEN}`,
+"Content-Type": "application/json"
+}
+}
+);
+
+}
+
+// =============================
+// 🔹 WEBHOOK MENSAJES
 // =============================
 app.post("/webhook", async (req, res) => {
-  try {
-
-    if (
-      !req.body.entry ||
-      !req.body.entry[0].changes ||
-      !req.body.entry[0].changes[0].value.messages ||
-      !req.body.entry[0].changes[0].value.messages[0]
-    ) {
-      return res.sendStatus(200);
-    }
-
-    const message = req.body.entry[0].changes[0].value.messages[0];
-
-    if (message.type !== "text") {
-      return res.sendStatus(200);
-    }
-
-    if (message.from === PHONE_NUMBER_ID) {
-      return res.sendStatus(200);
-    }
-
-    const text = message.text?.body || "";
-    const userMessage = text.toLowerCase().trim();
-    const messageId = message.id;
-
-    let raw = message.from;
-
-    if (raw.startsWith("521")) {
-      raw = "52" + raw.slice(3);
-    }
-
-    let from =
-      "+52 " +
-      raw.slice(2, 5) + " " +
-      raw.slice(5, 8) + " " +
-      raw.slice(8);
-
-    if (!userStates[from]) {
-      userStates[from] = { step: "menu", lastMessageId: null };
-    }
-
-    if (userStates[from].lastMessageId === messageId) {
-      return res.sendStatus(200);
-    }
-
-    userStates[from].lastMessageId = messageId;
-
-    let responseText = "";
-
-    const mainMenu = `👋 Hola. Bienvenido a Beta Procesos, tu aliado en limpieza profesional.
-
-1️⃣ Información Productos
-2️⃣ Cotización
-3️⃣ Facturación
-4️⃣ Rastreo
-5️⃣ Compras
-6️⃣ Ficha técnica / Hoja de seguridad
-7️⃣ Reclutamiento
-8️⃣ Dirección tienda Celaya
-9️⃣ Quejas`;
-
-    // =============================
-    // 🔹 VOLVER AL MENÚ
-    // =============================
-    if (userMessage === "0") {
-      userStates[from].step = "menu";
-      responseText = mainMenu;
-    }
-
-    // =============================
-    // 🔹 MENÚ PRINCIPAL
-    // =============================
-    else if (userStates[from].step === "menu") {
-
-      if (userMessage === "1") {
-        userStates[from].step = "info_productos";
-        responseText =
-`📦Información de Productos
-Comparte:
-Nombre:
-Empresa:
-Estado:
-Teléfono:
-Correo:
-Producto deseado:
-Escribe 0 para volver al menú.`;
-      }
-
-      else if (userMessage === "2") {
-        userStates[from].step = "cotizacion_menu";
-        responseText =
-`💰 Cotización Especializada
-
-Indícanos el giro:
-
-A) Hotel
-B) Restaurante
-C) Hospital
-D) Metalmecánica
-E) Invernadero
-F) Escuelas
-
-Escribe la letra correspondiente.
-Escribe 0 para volver al menú.`;
-      }
-
-      else if (userMessage === "3") {
-        responseText =
-`🧾 Facturación
-Envíanos tu constancia de situación fiscal,ticket o comprobante de compra y en caso de refacturación el número de factura al correo:
-info@betaprocesos.com.mx
-
-Escribe 0 para volver al menú.`;
-      }
-
-      else if (userMessage === "4") {
-        responseText =
-`🚚 Rastreo
-Por el momento no contamos con tienda web.
-Escribe 0 para volver al menú.`;
-      }
-
-      else if (userMessage === "5") {
-        responseText =
-`🛒 Compras
-Para ofrecernos tus productos comunicate a este correo:
-staffcompras@betaprocesos.com.mx
-Escribe 0 para volver al menú.`;
-      }
-
-      else if (userMessage === "6") {
-        userStates[from].step = "ficha";
-        responseText =
-`📄 Ficha Técnica
-Comparte:
-Razón social:
-Empresa:
-Ciudad:
-Teléfono:
-Correo:
-Persona que atenderá al ejecutivo:
-
-Escribe 0 para volver al menú.`;
-      }
-
-      else if (userMessage === "7") {
-        responseText =
-`👥 Reclutamiento
-Hola. En Beta Procesos nos encanta tener nuevos talentos.
-Por favor, envíanos tu curriculum vitae a fvazquez@betaprocesos.com.mx  o visita nuestro facebook 
-dando clic en el enlace y con gusto uno de nuestros reclutadores te atenderan. ¡Mucho éxito! 
-https://www.facebook.com/profile.php?id=61555196763207&locale=es_LA
-Escribe 0 para volver al menú.`;
-      }
-
-      else if (userMessage === "8") {
-        responseText =
-`📍 Sucursal Principal:
-Av. México–Japón No.146, Col. Ciudad Industrial, Celaya, Gto.
-
-Sucursal 2 de abril:
-Av. 2 de abril #230 local 208 Col. Villa de los Reyes, Celaya, Gto.
-
-Horario:
-L-V 8:00am - 6:00pm
-Sáb 8:00am - 2:00pm
-
-Escribe 0 para volver al menú.`;
-      }
-
-      else if (userMessage === "9") {
-        userStates[from].step = "quejas";
-        responseText =
-`📢 Área de Quejas
-Q1 Productos
-Q2 Unidades
-
-Escribe Q1 o Q2`;
-      }
-
-      else {
-        responseText = mainMenu;
-      }
-    }
-
-    // =============================
-    // 🔹 PROTOCOLO QUEJAS
-    // =============================
-    else if (userStates[from].step === "quejas") {
-
-      if (userMessage === "q1") {
-        userStates[from].step = "queja_producto";
-        responseText = "📝 Escribe tu queja sobre el producto.";
-
-      } else if (userMessage === "q2") {
-        userStates[from].step = "queja_unidad";
-        responseText = "📝 Escribe tu queja sobre la unidad.";
-      } else {
-        responseText = "❌ Opción inválida. Escribe Q1 o Q2.";
-      }
-    }
-
-    else if (userStates[from].step === "queja_producto") {
-
-      console.log("Queja registrada:", text);
-
-      responseText =
-"✅ Hola, buen día.Gracias por hacernos llegar este reporte.\nLamentamos lo ocurrido y valoramos mucho este tipo de comentarios,ya que nos ayudan a mejorar.";
-
-      userStates[from].step = "menu";
-    }
-
-    else if (userStates[from].step === "queja_unidad") {
-
-      console.log("Queja registrada:", text);
-
-      responseText = 
-"✅ Hola, buen día.Gracias por hacernos llegar este reporte.\nLamentamos lo ocurrido y valoramos mucho este tipo de comentarios,ya que nos ayudan a mejorar y a reforzar la seguridad vial.\n¿Podría apoyarnos indicándonos la ubicación exacta, la hora aproximada del incidente y, en caso de haberlo identificado, el número de unidad? Con esta información podremos dar seguimiento puntual con el área correspondiente y tomar las medidas necesarias.\nQuedamos a sus órdenes y le reiteramos nuestro compromiso con la conducción responsable.";
-
-      userStates[from].step = "menu";
-    }
-
-    // =============================
-    //  COTIZACIÓN DINÁMICA
-    // =============================
-    else if (userStates[from].step === "cotizacion_menu") {
-
-      const preguntasPorGiro = {
-        a: { nombre: "Hotel", preguntas: [
-          "¿Cuántas habitaciones tiene el hotel?",
-          "¿Qué tipo de suciedad desea limpiar?",
-          "¿En qué tipo de superficies se encuentra esta suciedad o desea aplicar el producto?",
-          "Para continuar con la cotizacion,\nPor favor proporcionanos la siguiente información,\nNombre de la persona que atenderá a nuestro ejecutivo",
-          "Ciudad",
-          "Estado de la república:",
-          "Teléfono:",
-          "Correo electrónico:",
-          "¿Cuenta con alguna certificación?"
-        ]},
-        b: { nombre: "Restaurante", preguntas: [
-          "¿Con cuántas mesas cuentan?",
-          "¿Tipo de grasa a eliminar?",
-          "¿En qué tipo de superficies se encuentra esta suciedad o desea aplicar el producto?",
-          "Para continuar con la cotizacion,\nPor favor proporcionanos la siguiente información,\nNombre de la persona que atenderá a nuestro ejecutivo",
-          "Ciudad",
-          "Estado de la república:",
-          "Teléfono:",
-          "Correo electrónico:",
-          "¿Cuenta con alguna certificación?"
-        ]},
-        c: { nombre: "Hospital", preguntas: [
-          "¿Número de cuartos?",
-          "¿Qué tipo de suciedad desea limpiar?",
-          "¿En qué tipo de superficies se encuentra esta suciedad o desea aplicar el producto?",
-          "Para continuar con la cotizacion,\nPor favor proporcionanos la siguiente información,\nNombre de la persona que atenderá a nuestro ejecutivo",
-          "Ciudad",
-          "Estado de la república:",
-          "Teléfono:",
-          "Correo electrónico:",
-          "¿Cuenta con alguna certificación?"
-        ]},
-        d: { nombre: "Metalmecánica", preguntas: [
-          "¿Con cuántos empleados cuentan?",
-          "¿Qué tipo de suciedad desea limpiar?",
-          "¿En qué tipo de superficies se encuentra esta suciedad o desea aplicar el producto?",
-          "Para continuar con la cotizacion,\nPor favor proporcionanos la siguiente información,\nNombre de la persona que atenderá a nuestro ejecutivo",
-          "Ciudad",
-          "Estado de la república:",
-          "Teléfono:",
-          "Correo electrónico:",
-          "¿Cuenta con alguna certificación?"
-        ]},
-        e: { nombre: "Invernadero", preguntas: [
-          "¿Con cuántas hectareas cuentan?",
-          "¿Qué tipo de suciedad desea limpiar?",
-          "¿En qué tipo de superficies se encuentra esta suciedad o desea aplicar el producto?",
-          "Para continuar con la cotizacion,\nPor favor proporcionanos la siguiente información,\nNombre de la persona que atenderá a nuestro ejecutivo",
-          "Ciudad",
-          "Estado de la república:",
-          "Teléfono:",
-          "Correo electrónico:",
-          "¿Cuenta con alguna certificación?"
-        ]},
-        f: { nombre: "Escuela", preguntas: [
-          "¿Con cuántos estudiantes cuentan?",
-          "¿Número de salones?",
-          "¿Qué tipo de suciedad desea limpiar?",
-          "¿En qué tipo de superficies se encuentra esta suciedad o desea aplicar el producto?",
-          "Para continuar con la cotizacion,\nPor favor proporcionanos la siguiente información,\nNombre de la persona que atenderá a nuestro ejecutivo",
-          "Ciudad",
-          "Estado de la república:",
-          "Teléfono:",
-          "Correo electrónico:",
-          "¿Cuenta con alguna certificación?"
-        ]}
-      };
-
-      if (preguntasPorGiro[userMessage]) {
-
-        userStates[from] = {
-          step: "cot_pregunta",
-          giro: preguntasPorGiro[userMessage].nombre,
-          preguntas: preguntasPorGiro[userMessage].preguntas,
-          respuestas: [],
-          index: 0,
-          lastMessageId: messageId
-        };
-
-        responseText =
-`📌 Cotización para ${userStates[from].giro}
-
-1️⃣ ${userStates[from].preguntas[0]}`;
-
-      } else {
-        responseText = "❌ Opción inválida. Escribe A, B, C, D, E o F.";
-      }
-    }
-
-    else if (userStates[from].step === "cot_pregunta") {
-
-      userStates[from].respuestas.push(text);
-      userStates[from].index++;
-
-      if (userStates[from].index < userStates[from].preguntas.length) {
-
-        responseText =
-`${userStates[from].index + 1}️⃣ ${userStates[from].preguntas[userStates[from].index]}`;
-
-      } else {
-
-        console.log("==== NUEVA COTIZACIÓN ====");
-        console.log("Cliente:", from);
-        console.log("Giro:", userStates[from].giro);
-        console.log("Respuestas:", userStates[from].respuestas);
-        await Cotizacion.create({
-  cliente: from,
-  telefono: raw,
-  giro: userStates[from].giro,
-  respuestas: userStates[from].respuestas
-});
-        await enviarCorreoCotizacion(
-          from,
-          userStates[from].giro,
-          userStates[from].respuestas
-        );
-        responseText =
-`✅ Gracias por la información.
-
-Hemos registrado tu solicitud.
-Un asesor se pondrá en contacto contigo.`;
-
-        userStates[from].step = "menu";
-      }
-    }
-
-    else if (
-      userStates[from].step === "info_productos" ||
-      userStates[from].step === "ficha"
-    ) {
-
-      console.log("Solicitud:", text);
-
-      responseText =
-`✅ Hemos recibido tu información.
-Un asesor se pondrá en contacto contigo.
-
-Escribe 0 para volver al menú.`;
-
-      userStates[from].step = "menu";
-    }
-
-    if (responseText !== "") {
-      await axios.post(
-        `https://graph.facebook.com/v19.0/${PHONE_NUMBER_ID}/messages`,
-        {
-          messaging_product: "whatsapp",
-          to: raw,
-          text: { body: responseText }
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${TOKEN}`,
-            "Content-Type": "application/json"
-          }
-        }
-      );
-    }
-
-    res.sendStatus(200);
-
-  } catch (error) {
-    console.error(error.response?.data || error);
-    res.sendStatus(500);
-  }
+
+let entry = req.body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
+
+if (!entry) {
+return res.sendStatus(200);
+}
+
+const from = entry.from;
+const msg = entry.text?.body?.toLowerCase();
+
+if (!userStates[from]) {
+userStates[from] = { step: "menu" };
+
+await sendMessage(from,
+`Hola 👋
+Bienvenido a *Beta* especialistas en limpieza y sanitización.
+
+Selecciona una opción:
+
+1️⃣ Conocer productos
+2️⃣ Servicios de sanitización
+3️⃣ Información de Betita
+4️⃣ Solicitar cotización
+5️⃣ Reclutamiento`
+);
+
+return res.sendStatus(200);
+}
+
+// =============================
+// MENU PRINCIPAL
+// =============================
+
+if (userStates[from].step === "menu") {
+
+if (msg === "1") {
+
+userStates[from].step = "productos";
+
+await sendMessage(from,
+`Selecciona el área:
+
+1️⃣ Industria alimentaria
+2️⃣ Industria institucional
+3️⃣ Limpieza industrial
+4️⃣ Negocios y hogar`
+);
+
+}
+
+else if (msg === "2") {
+
+userStates[from].step = "sanitizacion";
+
+await sendMessage(from,
+`Servicios de sanitización.
+
+Selecciona el tipo de espacio:
+
+1️⃣ Oficinas
+2️⃣ Plantas industriales
+3️⃣ Restaurantes
+4️⃣ Espacios comerciales
+5️⃣ Casas`
+);
+
+}
+
+else if (msg === "3") {
+
+userStates[from].step = "betita";
+
+await sendMessage(from,
+`Betita - tienda de productos de higiene.
+
+1️⃣ Ubicación de sucursales
+2️⃣ Pedidos a domicilio en Celaya`
+);
+
+}
+
+else if (msg === "4") {
+
+userStates[from].step = "cot_nombre";
+
+await sendMessage(from,
+`Para cotizar necesitamos algunos datos.
+
+Escribe tu *nombre completo*`
+);
+
+}
+
+else if (msg === "5") {
+
+await sendMessage(from,
+`Envía tu CV al correo:
+
+ggutierrez@betaprocesos.com.mx
+
+Gracias por tu interés en formar parte de Beta.`
+);
+
+}
+
+}
+
+// =============================
+// PRODUCTOS
+// =============================
+
+else if (userStates[from].step === "productos") {
+
+let texto = "";
+
+if (msg === "1") {
+
+texto =
+`Industria alimentaria
+
+• Detergentes industriales
+• Desinfectantes
+• Sistemas de limpieza
+• Programas de higiene
+
+1️⃣ Recomendación de productos
+2️⃣ Solicitar cotización
+3️⃣ Hablar con asesor`;
+
+}
+
+if (msg === "2") {
+
+texto =
+`Industria institucional
+
+• Detergentes profesionales
+• Sanitizantes
+• Lavado de utensilios
+
+1️⃣ Recomendación de productos
+2️⃣ Solicitar cotización
+3️⃣ Hablar con asesor`;
+
+}
+
+if (msg === "3") {
+
+texto =
+`Limpieza industrial
+
+• Desengrasantes
+• Detergentes alcalinos
+• Desinfectantes
+
+1️⃣ Recomendación de productos
+2️⃣ Solicitar cotización
+3️⃣ Hablar con asesor`;
+
+}
+
+if (msg === "4") {
+
+texto =
+`Negocios y hogar
+
+• Detergentes
+• Limpieza de pisos
+• Suavizantes
+• Gel antibacterial
+
+1️⃣ Recomendación de productos
+2️⃣ Solicitar cotización
+3️⃣ Hablar con asesor`;
+
+}
+
+await sendMessage(from, texto);
+
+}
+
+// =============================
+// SANITIZACIÓN
+// =============================
+
+else if (userStates[from].step === "sanitizacion") {
+
+await sendMessage(from,
+`Nuestros servicios incluyen:
+
+• Sanitización profesional
+• Protocolos de higiene
+• Personal capacitado
+• Equipos especializados
+
+1️⃣ Solicitar cotización
+2️⃣ Hablar con asesor`
+);
+
+}
+
+// =============================
+// BETITA
+// =============================
+
+else if (userStates[from].step === "betita") {
+
+if (msg === "1") {
+
+await sendMessage(from,
+`Sucursales Betita en Celaya:
+
+Av México Japón
+https://maps.app.goo.gl/1p7j7Z7ihmPFJhUj8
+
+Av 2 de Abril
+https://maps.app.goo.gl/JpPS5LqrhEqMhjtm8`
+);
+
+}
+
+if (msg === "2") {
+
+await sendMessage(from,
+`Pedidos a domicilio:
+
+https://wa.me/524612397325
+
+Instagram
+@betita.tienda`
+);
+
+}
+
+}
+
+// =============================
+// FORMULARIO COTIZACIÓN
+// =============================
+
+else if (userStates[from].step === "cot_nombre") {
+
+userStates[from].nombre = msg;
+userStates[from].step = "cot_empresa";
+
+await sendMessage(from,"Nombre de tu empresa:");
+
+}
+
+else if (userStates[from].step === "cot_empresa") {
+
+userStates[from].empresa = msg;
+userStates[from].step = "cot_ciudad";
+
+await sendMessage(from,"Ciudad:");
+
+}
+
+else if (userStates[from].step === "cot_ciudad") {
+
+userStates[from].ciudad = msg;
+userStates[from].step = "cot_giro";
+
+await sendMessage(from,
+`Giro de la empresa:
+
+• Industria alimentaria
+• Restaurante
+• Hotel
+• Industria
+• Comercio
+• Otro`
+);
+
+}
+
+else if (userStates[from].step === "cot_giro") {
+
+userStates[from].giro = msg;
+userStates[from].step = "cot_producto";
+
+await sendMessage(from,"¿Qué producto o servicio te interesa?");
+
+}
+
+else if (userStates[from].step === "cot_producto") {
+
+userStates[from].producto = msg;
+
+await sendMessage(from,
+`Gracias por la información.
+
+Un asesor de *Beta* revisará tu solicitud y se pondrá en contacto contigo pronto.`
+);
+
+userStates[from].step = "menu";
+
+}
+
+res.sendStatus(200);
+
 });
 
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-  console.log("🚀 Servidor corriendo en puerto " + PORT);
+// =============================
+app.listen(3000, () => {
+console.log("Servidor corriendo");
 });
