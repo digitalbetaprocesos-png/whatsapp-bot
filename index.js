@@ -263,10 +263,12 @@ if (msg === "a") {
 texto =
 `Industria alimentaria
 
+En la industria alimentaria es fundamental garantizar higiene, inocuidad y seguridad en los procesos.
+En Beta contamos con:
 • Detergentes industriales
-• Desinfectantes
-• Sistemas de limpieza
-• Programas de higiene
+• Desinfectantes y sanitizantes
+• Sistemas de limpieza especializados
+• Programas de higiene para plantas alimentarias
 
 1️⃣ Recomendación de productos
 2️⃣ Solicitar cotización
@@ -279,9 +281,12 @@ if (msg === "b") {
 texto =
 `Industria institucional
 
+Ofrecemos soluciones para mantener espacios seguros, higiénicos y libres de contaminación.
+Algunos productos incluyen:
 • Detergentes profesionales
-• Sanitizantes
-• Lavado de utensilios
+• Sanitizantes para cocina
+• Productos para lavado de utensilios
+• Sistemas de higiene para restaurantes
 
 1️⃣ Recomendación de productos
 2️⃣ Solicitar cotización
@@ -294,9 +299,11 @@ if (msg === "c") {
 texto =
 `Limpieza industrial
 
-• Desengrasantes
-• Detergentes alcalinos
-• Desinfectantes
+Contamos con soluciones especializadas para procesos industriales:
+• Desengrasantes industriales
+• Detergentes alcalinos y ácidos
+• Desinfectantes profesionales
+• Sistemas de limpieza técnica
 
 1️⃣ Recomendación de productos
 2️⃣ Solicitar cotización
@@ -309,9 +316,10 @@ if (msg === "d") {
 texto =
 `Negocios y hogar
 
+Contamos con soluciones especializadas para tu negocio y hogar:
 • Detergentes
-• Limpieza de pisos
-• Suavizantes
+• Productos para limpieza de pisos
+• Suavizantes de tela
 • Gel antibacterial
 
 1️⃣ Recomendación de productos
@@ -386,13 +394,17 @@ else if (userStates[from].step === "betita") {
 if (msg === "1") {
 
 await sendMessage(from,
-`Sucursales Betita en Celaya:
+`Betita cuenta con sucursales en Celaya, Guanajuato.
 
-Av México Japón
-https://maps.app.goo.gl/1p7j7Z7ihmPFJhUjj8
+Av. México Japón: https://maps.app.goo.gl/1p7j7Z7ihmPFJhUj8
 
-Av 2 de Abril
-https://maps.app.goo.gl/JpPS5LqrhEqMhjtm8`
+Av. 2 de Abril: https://maps.app.goo.gl/JpPS5LqrhEqMhjtm8
+
+Si deseas realizar un pedido o recibir información puedes escribir directamente a nuestro WhatsApp:
+https://wa.me/524612397325
+También puedes seguirnos en Instagram:
+@betita.tienda
+`
 );
 
 }
@@ -400,11 +412,9 @@ https://maps.app.goo.gl/JpPS5LqrhEqMhjtm8`
 if (msg === "2") {
 
 await sendMessage(from,
-`Pedidos a domicilio:
-
+`Escríbenos en nuestro WhatsApp exclusivo de Betita.
 https://wa.me/524612397325
-
-Instagram
+También puedes seguirnos en Instagram:
 @betita.tienda`
 );
 
