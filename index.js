@@ -477,8 +477,6 @@ También puedes seguirnos en Instagram:
 https://www.instagram.com/betita.tienda/`
 );
 
-await mensajeCierre(from);
-
 }
 
 if (msg === "2") {
