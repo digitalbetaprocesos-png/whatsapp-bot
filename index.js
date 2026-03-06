@@ -27,12 +27,12 @@ const Cotizacion = mongoose.model("Cotizacion", CotizacionSchema);
 const app = express();
 app.use(express.json());
 
-// 🔐 Variables
 const TOKEN = process.env.WHATSAPP_TOKEN;
 const PHONE_NUMBER_ID = process.env.PHONE_NUMBER_ID;
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
 
 const userStates = {};
+const processedMessages = new Set();
 
 
 // =============================
@@ -62,7 +62,6 @@ async function sendMessage(to, message) {
 
   } catch (error) {
 
-    console.log("Error enviando mensaje");
     console.log(error.response?.data || error.message);
 
   }
@@ -81,8 +80,10 @@ app.get("/webhook", (req, res) => {
   const challenge = req.query["hub.challenge"];
 
   if (mode && token === VERIFY_TOKEN) {
+
     console.log("Webhook verificado");
     return res.status(200).send(challenge);
+
   }
 
   res.sendStatus(403);
@@ -96,43 +97,41 @@ app.get("/webhook", (req, res) => {
 
 app.post("/webhook", async (req, res) => {
 
-  try {
+try {
 
-    if (
-      !req.body.entry ||
-      !req.body.entry[0].changes ||
-      !req.body.entry[0].changes[0].value.messages
-    ) {
-      return res.sendStatus(200);
-    }
+const value = req.body.entry?.[0]?.changes?.[0]?.value;
 
-    const message = req.body.entry[0].changes[0].value.messages[0];
+if (!value?.messages) return res.sendStatus(200);
 
-    if (!message || message.type !== "text") {
-      return res.sendStatus(200);
-    }
+const message = value.messages[0];
 
-    const text = message.text.body;
-    const userMessage = text.toLowerCase().trim();
-    const msg = userMessage;
+if (!message || message.type !== "text") return res.sendStatus(200);
 
-    let raw = message.from;
+if (processedMessages.has(message.id)) return res.sendStatus(200);
 
-    if (raw.startsWith("521")) {
-      raw = "52" + raw.slice(3);
-    }
+processedMessages.add(message.id);
 
-    let from =
-      "+52 " +
-      raw.slice(2, 5) + " " +
-      raw.slice(5, 8) + " " +
-      raw.slice(8);
+const msg = message.text.body.toLowerCase().trim();
 
-    if (!userStates[from]) {
-      userStates[from] = { step: "menu" };
-    }
+let raw = message.from;
 
-    const mainMenu = `Hola 👋
+if (raw.startsWith("521")) {
+  raw = "52" + raw.slice(3);
+}
+
+let from =
+"+52 " +
+raw.slice(2,5)+" "+
+raw.slice(5,8)+" "+
+raw.slice(8);
+
+if (!userStates[from]) {
+
+userStates[from] = { step: "menu" };
+
+}
+
+const mainMenu = `Hola 👋
 Bienvenido a *Beta* especialistas en limpieza y sanitización.
 
 Selecciona una opción:
@@ -150,8 +149,8 @@ Selecciona una opción:
 
 if (msg === "0") {
 
-  userStates[from].step = "menu";
-  await sendMessage(from, mainMenu);
+userStates[from].step = "menu";
+await sendMessage(from, mainMenu);
 
 }
 
@@ -169,17 +168,17 @@ userStates[from].step = "productos";
 await sendMessage(from,
 `Selecciona el área:
 
-1️⃣ Industria alimentaria
-2️⃣ Industria institucional
-3️⃣ Limpieza industrial
-4️⃣ Negocios y hogar`
+A Industria alimentaria
+B Industria institucional
+C Limpieza industrial
+D Negocios y hogar`
 );
 
 }
 
 else if (msg === "2") {
 
-userStates[from].step = "sanitizacion";
+userStates[from].step = "sanitizacion_menu";
 
 await sendMessage(from,
 `Servicios de sanitización.
@@ -247,9 +246,19 @@ await sendMessage(from, mainMenu);
 
 else if (userStates[from].step === "productos") {
 
+if (msg === "2") {
+
+userStates[from].step = "cot_nombre";
+
+await sendMessage(from,"Para cotizar escribe tu *nombre completo*");
+
+return;
+
+}
+
 let texto = "";
 
-if (msg === "1") {
+if (msg === "a") {
 
 texto =
 `Industria alimentaria
@@ -265,7 +274,7 @@ texto =
 
 }
 
-if (msg === "2") {
+if (msg === "b") {
 
 texto =
 `Industria institucional
@@ -280,7 +289,7 @@ texto =
 
 }
 
-if (msg === "3") {
+if (msg === "c") {
 
 texto =
 `Limpieza industrial
@@ -295,7 +304,7 @@ texto =
 
 }
 
-if (msg === "4") {
+if (msg === "d") {
 
 texto =
 `Negocios y hogar
@@ -320,7 +329,11 @@ await sendMessage(from, texto);
 // SANITIZACIÓN
 // =============================
 
-else if (userStates[from].step === "sanitizacion") {
+else if (userStates[from].step === "sanitizacion_menu") {
+
+if (["1","2","3","4","5"].includes(msg)) {
+
+userStates[from].step = "sanitizacion";
 
 await sendMessage(from,
 `Nuestros servicios incluyen:
@@ -333,6 +346,33 @@ await sendMessage(from,
 1️⃣ Solicitar cotización
 2️⃣ Hablar con asesor`
 );
+
+}
+
+}
+
+
+// =============================
+// OPCIONES SANITIZACIÓN
+// =============================
+
+else if (userStates[from].step === "sanitizacion") {
+
+if (msg === "1") {
+
+userStates[from].step = "cot_nombre";
+
+await sendMessage(from,"Para cotizar escribe tu *nombre completo*");
+
+}
+
+if (msg === "2") {
+
+await sendMessage(from,
+"Un asesor se pondrá en contacto contigo en breve."
+);
+
+}
 
 }
 
@@ -349,7 +389,7 @@ await sendMessage(from,
 `Sucursales Betita en Celaya:
 
 Av México Japón
-https://maps.app.goo.gl/1p7j7Z7ihmPFJhUj8
+https://maps.app.goo.gl/1p7j7Z7ihmPFJhUjj8
 
 Av 2 de Abril
 https://maps.app.goo.gl/JpPS5LqrhEqMhjtm8`
@@ -400,16 +440,7 @@ else if (userStates[from].step === "cot_ciudad") {
 userStates[from].ciudad = msg;
 userStates[from].step = "cot_giro";
 
-await sendMessage(from,
-`Giro de la empresa:
-
-• Industria alimentaria
-• Restaurante
-• Hotel
-• Industria
-• Comercio
-• Otro`
-);
+await sendMessage(from,"Giro de la empresa:");
 
 }
 
@@ -440,13 +471,12 @@ res.sendStatus(200);
 
 } catch (error) {
 
-console.log(error.response?.data || error);
+console.log(error);
 res.sendStatus(500);
 
 }
 
 });
-
 
 const PORT = process.env.PORT || 3000;
 
