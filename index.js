@@ -70,6 +70,23 @@ async function sendMessage(to, message) {
 
 
 // =============================
+// MENSAJE DE CIERRE
+// =============================
+
+async function mensajeCierre(from){
+
+await sendMessage(from,
+`Gracias por contactar a Beta.
+
+Nuestro equipo revisará tu solicitud y se pondrá en contacto contigo lo antes posible.
+Mientras tanto, puedes conocer más sobre nuestras soluciones en:
+🌐 www.betaprocesos.com.mx`
+);
+
+}
+
+
+// =============================
 // VERIFICAR WEBHOOK
 // =============================
 
@@ -199,7 +216,7 @@ else if (msg === "3") {
 userStates[from].step = "betita";
 
 await sendMessage(from,
-`Betita - tienda de productos de higiene.
+`Betita es la tienda de productos de higiene de calidad industrial de Beta..
 
 1️⃣ Ubicación de sucursales
 2️⃣ Pedidos a domicilio en Celaya`
@@ -228,6 +245,8 @@ ggutierrez@betaprocesos.com.mx
 
 Gracias por tu interés en formar parte de Beta.`
 );
+
+await mensajeCierre(from);
 
 }
 
@@ -380,6 +399,8 @@ await sendMessage(from,
 "Un asesor se pondrá en contacto contigo en breve."
 );
 
+await mensajeCierre(from);
+
 }
 
 }
@@ -403,9 +424,10 @@ Av. 2 de Abril: https://maps.app.goo.gl/JpPS5LqrhEqMhjtm8
 Si deseas realizar un pedido o recibir información puedes escribir directamente a nuestro WhatsApp:
 https://wa.me/524612397325
 También puedes seguirnos en Instagram:
-@betita.tienda
-`
+https://www.instagram.com/betita.tienda/`
 );
+
+await mensajeCierre(from);
 
 }
 
@@ -414,9 +436,12 @@ if (msg === "2") {
 await sendMessage(from,
 `Escríbenos en nuestro WhatsApp exclusivo de Betita.
 https://wa.me/524612397325
+
 También puedes seguirnos en Instagram:
-@betita.tienda`
+https://www.instagram.com/betita.tienda/`
 );
+
+await mensajeCierre(from);
 
 }
 
@@ -467,11 +492,7 @@ else if (userStates[from].step === "cot_producto") {
 
 userStates[from].producto = msg;
 
-await sendMessage(from,
-`Gracias por la información.
-
-Un asesor de *Beta* revisará tu solicitud y se pondrá en contacto contigo pronto.`
-);
+await mensajeCierre(from);
 
 userStates[from].step = "menu";
 
