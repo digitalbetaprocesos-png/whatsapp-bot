@@ -9,6 +9,9 @@ const TOKEN = process.env.WHATSAPP_TOKEN;
 const PHONE_NUMBER_ID = process.env.PHONE_NUMBER_ID;
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
 
+// 🔧 PUERTO PARA RENDER
+const PORT = process.env.PORT || 3000;
+
 const userStates = {};
 
 // =============================
@@ -34,7 +37,7 @@ if (mode && token === VERIFY_TOKEN) {
 async function sendMessage(to, text) {
 
 await axios.post(
-`https://graph.facebook.com/v18.0/${PHONE_NUMBER_ID}/messages`,
+`https://graph.facebook.com/v24.0/${PHONE_NUMBER_ID}/messages`,
 {
     messaging_product: "whatsapp",
     to: to,
@@ -358,6 +361,8 @@ res.sendStatus(200);
 });
 
 // =============================
-app.listen(3000, () => {
-console.log("Servidor corriendo");
+// SERVIDOR
+// =============================
+app.listen(PORT, () => {
+console.log("Servidor corriendo en puerto " + PORT);
 });
