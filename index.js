@@ -449,7 +449,6 @@ await sendMessage(from,
 "Un asesor se pondrá en contacto contigo en breve."
 );
 
-await mensajeCierre(from);
 
 }
 
@@ -457,7 +456,7 @@ await mensajeCierre(from);
 
 
 // =============================
-// BETITA
+//         BETITA
 // =============================
 
 else if (userStates[from].step === "betita") {
@@ -489,7 +488,6 @@ También puedes seguirnos en Instagram:
 https://www.instagram.com/betita.tienda/`
 );
 
-await mensajeCierre(from);
 
 }
 
