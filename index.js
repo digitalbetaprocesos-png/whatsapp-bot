@@ -1,56 +1,138 @@
 const express = require("express");
 const axios = require("axios");
+const nodemailer = require("nodemailer");
+const mongoose = require("mongoose");
+
+mongoose.connect(process.env.MONGO_URI)
+.then(() => console.log("MongoDB conectado"))
+.catch(err => console.error(err));
+
+mongoose.connection.on("connected", () => {
+  console.log("📦 MongoDB conectado");
+});
+
+const CotizacionSchema = new mongoose.Schema({
+  cliente: String,
+  telefono: String,
+  giro: String,
+  respuestas: [String],
+  fecha: {
+    type: Date,
+    default: Date.now
+  }
+});
+
+const Cotizacion = mongoose.model("Cotizacion", CotizacionSchema);
 
 const app = express();
 app.use(express.json());
 
-// 🔐 Variables de entorno
+// 🔐 Variables
 const TOKEN = process.env.WHATSAPP_TOKEN;
 const PHONE_NUMBER_ID = process.env.PHONE_NUMBER_ID;
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
 
-// 🔧 PUERTO PARA RENDER
-const PORT = process.env.PORT || 3000;
-
 const userStates = {};
 
+
 // =============================
-// 🔹 VERIFICACIÓN WEBHOOK
+// FUNCIÓN PARA ENVIAR MENSAJES
 // =============================
+
+async function sendMessage(to, message) {
+
+  try {
+
+    let raw = to.replace(/\D/g, "");
+
+    await axios.post(
+      `https://graph.facebook.com/v24.0/${PHONE_NUMBER_ID}/messages`,
+      {
+        messaging_product: "whatsapp",
+        to: raw,
+        text: { body: message }
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${TOKEN}`,
+          "Content-Type": "application/json"
+        }
+      }
+    );
+
+  } catch (error) {
+
+    console.log("Error enviando mensaje");
+    console.log(error.response?.data || error.message);
+
+  }
+
+}
+
+
+// =============================
+// VERIFICAR WEBHOOK
+// =============================
+
 app.get("/webhook", (req, res) => {
 
-let mode = req.query["hub.mode"];
-let token = req.query["hub.verify_token"];
-let challenge = req.query["hub.challenge"];
+  const mode = req.query["hub.mode"];
+  const token = req.query["hub.verify_token"];
+  const challenge = req.query["hub.challenge"];
 
-if (mode && token === VERIFY_TOKEN) {
-    res.status(200).send(challenge);
-} else {
-    res.sendStatus(403);
-}
+  if (mode && token === VERIFY_TOKEN) {
+    console.log("Webhook verificado");
+    return res.status(200).send(challenge);
+  }
+
+  res.sendStatus(403);
 
 });
 
 
 // =============================
-// 🔹 WEBHOOK MENSAJES
+// RECIBIR MENSAJES
 // =============================
+
 app.post("/webhook", async (req, res) => {
 
-let entry = req.body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
+  try {
 
-if (!entry) {
-return res.sendStatus(200);
-}
+    if (
+      !req.body.entry ||
+      !req.body.entry[0].changes ||
+      !req.body.entry[0].changes[0].value.messages
+    ) {
+      return res.sendStatus(200);
+    }
 
-const from = entry.from;
-const msg = entry.text?.body?.toLowerCase();
+    const message = req.body.entry[0].changes[0].value.messages[0];
 
-if (!userStates[from]) {
-userStates[from] = { step: "menu" };
+    if (!message || message.type !== "text") {
+      return res.sendStatus(200);
+    }
 
-await sendMessage(from,
-`Hola 👋
+    const text = message.text.body;
+    const userMessage = text.toLowerCase().trim();
+    const msg = userMessage;
+
+    let raw = message.from;
+
+    if (raw.startsWith("521")) {
+      raw = "52" + raw.slice(3);
+    }
+
+    let from =
+      "+52 " +
+      raw.slice(2, 5) + " " +
+      raw.slice(5, 8) + " " +
+      raw.slice(8);
+
+    if (!userStates[from]) {
+      userStates[from] = { step: "menu" };
+    }
+
+    const mainMenu = `Hola 👋
 Bienvenido a *Beta* especialistas en limpieza y sanitización.
 
 Selecciona una opción:
@@ -59,17 +141,26 @@ Selecciona una opción:
 2️⃣ Servicios de sanitización
 3️⃣ Información de Betita
 4️⃣ Solicitar cotización
-5️⃣ Reclutamiento`
-);
+5️⃣ Reclutamiento`;
 
-return res.sendStatus(200);
+
+// =============================
+// VOLVER AL MENÚ
+// =============================
+
+if (msg === "0") {
+
+  userStates[from].step = "menu";
+  await sendMessage(from, mainMenu);
+
 }
 
+
 // =============================
-// MENU PRINCIPAL
+// MENÚ PRINCIPAL
 // =============================
 
-if (userStates[from].step === "menu") {
+else if (userStates[from].step === "menu") {
 
 if (msg === "1") {
 
@@ -141,7 +232,14 @@ Gracias por tu interés en formar parte de Beta.`
 
 }
 
+else {
+
+await sendMessage(from, mainMenu);
+
 }
+
+}
+
 
 // =============================
 // PRODUCTOS
@@ -217,6 +315,7 @@ await sendMessage(from, texto);
 
 }
 
+
 // =============================
 // SANITIZACIÓN
 // =============================
@@ -236,6 +335,7 @@ await sendMessage(from,
 );
 
 }
+
 
 // =============================
 // BETITA
@@ -271,6 +371,7 @@ Instagram
 }
 
 }
+
 
 // =============================
 // FORMULARIO COTIZACIÓN
@@ -337,33 +438,20 @@ userStates[from].step = "menu";
 
 res.sendStatus(200);
 
+} catch (error) {
+
+console.log(error.response?.data || error);
+res.sendStatus(500);
+
+}
+
 });
-// =============================
-// 🔹 ENVIAR MENSAJE
-// =============================
-async function sendMessage(to, text) {
-
-await axios.post(
-`https://graph.facebook.com/v24.0/${PHONE_NUMBER_ID}/messages`,
-{
-    messaging_product: "whatsapp",
-    to: to,
-    text: { body: text }
-},
-{
-headers: {
-Authorization: `Bearer ${TOKEN}`,
-"Content-Type": "application/json"
-}
-}
-);
-
-}
 
 
-// =============================
-// SERVIDOR
-// =============================
+const PORT = process.env.PORT || 3000;
+
 app.listen(PORT, () => {
-console.log("Servidor corriendo en puerto " + PORT);
+
+console.log("🚀 Servidor corriendo en puerto " + PORT);
+
 });
