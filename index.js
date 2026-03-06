@@ -76,13 +76,11 @@ async function sendMessage(to, message) {
 async function mensajeCierre(from){
 
 await sendMessage(from,
-`✅ Tu solicitud ha sido registrada.
-
-Un asesor de *Beta Procesos* revisará tu información y se pondrá en contacto contigo pronto.
-
-Si deseas regresar al menú principal escribe *0*.
-
-¡Gracias por contactarnos!`
+`Gracias por contactar a Beta.
+Nuestro equipo revisará tu solicitud y se pondrá en contacto contigo lo antes posible.
+Mientras tanto, puedes conocer más sobre nuestras soluciones en:
+🌐 www.betaprocesos.com.mx
+`
 );
 
 }
@@ -299,7 +297,6 @@ ggutierrez@betaprocesos.com.mx
 Gracias por tu interés en formar parte de Beta.`
 );
 
-await mensajeCierre(from);
 
 }
 
