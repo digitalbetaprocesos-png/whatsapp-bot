@@ -31,27 +31,6 @@ if (mode && token === VERIFY_TOKEN) {
 
 });
 
-// =============================
-// 🔹 ENVIAR MENSAJE
-// =============================
-async function sendMessage(to, text) {
-
-await axios.post(
-`https://graph.facebook.com/v24.0/${PHONE_NUMBER_ID}/messages`,
-{
-    messaging_product: "whatsapp",
-    to: to,
-    text: { body: text }
-},
-{
-headers: {
-Authorization: `Bearer ${TOKEN}`,
-"Content-Type": "application/json"
-}
-}
-);
-
-}
 
 // =============================
 // 🔹 WEBHOOK MENSAJES
@@ -359,6 +338,28 @@ userStates[from].step = "menu";
 res.sendStatus(200);
 
 });
+// =============================
+// 🔹 ENVIAR MENSAJE
+// =============================
+async function sendMessage(to, text) {
+
+await axios.post(
+`https://graph.facebook.com/v24.0/${PHONE_NUMBER_ID}/messages`,
+{
+    messaging_product: "whatsapp",
+    to: to,
+    text: { body: text }
+},
+{
+headers: {
+Authorization: `Bearer ${TOKEN}`,
+"Content-Type": "application/json"
+}
+}
+);
+
+}
+
 
 // =============================
 // SERVIDOR
