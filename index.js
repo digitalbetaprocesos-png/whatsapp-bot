@@ -161,7 +161,7 @@ Selecciona una opción:
 // RESPUESTAS AUTOMÁTICAS
 // =============================
 
-if (msg.includes("donde se encuentra beta") || msg.includes("dónde se encuentra beta")|| msg.includes("ubicacion")) {
+if (msg.includes("donde se encuentra beta") || msg.includes("dónde se encuentra beta")|| msg.includes("ubicación")) {
 
 await sendMessage(from,
 `Nuestro corporativo se encuentra en Celaya, Guanajuato.
@@ -262,10 +262,10 @@ await sendMessage(from,
 `En Beta desarrollamos soluciones profesionales de limpieza y sanitización para diferentes sectores
 Selecciona el área:
 
-A Industria alimentaria
-B Industria institucional
-C Limpieza industrial
-D Negocios y hogar`);
+1️⃣ Industria alimentaria
+2️⃣ Industria institucional
+3️⃣ Limpieza industrial
+4️⃣ Negocios y hogar`);
 
 }
 
@@ -357,7 +357,7 @@ return;
 
 let texto = "";
 
-if (msg === "a") {
+if (msg === "1") {
 
 texto =
 `Industria alimentaria
@@ -374,7 +374,7 @@ En Beta contamos con:
 
 }
 
-if (msg === "b") {
+if (msg === "2") {
 
 texto =
 `Industria institucional
@@ -391,7 +391,7 @@ Algunos productos incluyen:
 
 }
 
-if (msg === "c") {
+if (msg === "3") {
 
 texto =
 `Limpieza industrial
@@ -407,7 +407,7 @@ Contamos con soluciones especializadas para procesos industriales:
 
 }
 
-if (msg === "d") {
+if (msg === "4") {
 
 texto =
 `Negocios y hogar
@@ -564,8 +564,13 @@ userStates[from].step = "cot_producto";
 await sendMessage(from,"¿Qué producto o servicio te interesa?");
 
 }
+else if (userStates[from].step ==="cot_producto"){
+  userStates[from].grio=msg;
+  userStates[from].step="cot_comentario"
+  await sendMessage(from,"Escribe un comentario extra para tu cotizacion")
+}
 
-else if (userStates[from].step === "cot_producto") {
+else if (userStates[from].step === "cot_comentario") {
 
 userStates[from].producto = msg;
 
