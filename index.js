@@ -346,6 +346,14 @@ await sendMessage(from,"Para cotizar escribe tu *nombre completo*");
 return;
 
 }
+if (msg === "1") {
+
+await sendMessage(from,"Un asesor se pondrá en contacto contigo en breve.");
+
+return;
+
+}
+
 
 let texto = "";
 
@@ -361,9 +369,8 @@ En Beta contamos con:
 • Sistemas de limpieza especializados
 • Programas de higiene para plantas alimentarias
 
-1️⃣ Recomendación de productos
-2️⃣ Solicitar cotización
-3️⃣ Hablar con asesor`;
+1️⃣ Hablar con asesor
+2️⃣ Solicitar cotización`;
 
 }
 
@@ -379,9 +386,8 @@ Algunos productos incluyen:
 • Productos para lavado de utensilios
 • Sistemas de higiene para restaurantes
 
-1️⃣ Recomendación de productos
-2️⃣ Solicitar cotización
-3️⃣ Hablar con asesor`;
+1️⃣ Hablar con asesor
+2️⃣ Solicitar cotización`;
 
 }
 
@@ -396,9 +402,8 @@ Contamos con soluciones especializadas para procesos industriales:
 • Desinfectantes profesionales
 • Sistemas de limpieza técnica
 
-1️⃣ Recomendación de productos
-2️⃣ Solicitar cotización
-3️⃣ Hablar con asesor`;
+1️⃣ Hablar con asesor
+2️⃣ Solicitar cotización`;
 
 }
 
@@ -413,9 +418,8 @@ Contamos con soluciones especializadas para tu negocio y hogar:
 • Suavizantes de tela
 • Gel antibacterial
 
-1️⃣ Recomendación de productos
-2️⃣ Solicitar cotización
-3️⃣ Hablar con asesor`;
+1️⃣ Hablar con asesor
+2️⃣ Solicitar cotización`;
 
 }
 
@@ -505,8 +509,6 @@ await sendMessage(from,
 Escríbenos en nuestro WhatsApp exclusivo de Betita.
 https://wa.me/524612397325
 También puedes seguirnos en Instagram:
-Instagram:
-Instagram:
 https://www.instagram.com/betita.tienda/`);
 
 }
