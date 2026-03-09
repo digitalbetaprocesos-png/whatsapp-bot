@@ -161,7 +161,7 @@ Selecciona una opción:
 // RESPUESTAS AUTOMÁTICAS
 // =============================
 
-if (msg.includes("donde se encuentra beta") || msg.includes("dónde se encuentra beta")) {
+if (msg.includes("donde se encuentra beta") || msg.includes("dónde se encuentra beta")|| msg.includes("ubicacion")) {
 
 await sendMessage(from,
 `Nuestro corporativo se encuentra en Celaya, Guanajuato.
