@@ -574,6 +574,7 @@ telefono: from,
 giro: userStates[from].giro,
 respuestas: [
 userStates[from].empresa,
+userStates[from].correo,
 userStates[from].ciudad,
 userStates[from].producto
 ]
@@ -582,7 +583,12 @@ userStates[from].producto
 
 await nuevaCotizacion.save();
 
-await mensajeCierre(from);
+await sendMessage(from,
+`Gracias por la información.
+Un asesor de Beta revisará tu solicitud y se pondrá en contacto contigo en breve.
+`);
+
+
 
 userStates[from].step = "menu";
 
