@@ -6,8 +6,8 @@ const mongoose = require("mongoose");
 // CONTROL DE INTERVENCIÓN HUMANA
 // =============================
 
-const humanActive = {};
-const HUMAN_TIMEOUT = 30 * 60 * 1000; // 30 minutos
+//const humanActive = {};
+//const HUMAN_TIMEOUT = 30 * 60 * 1000; // 30 minutos
 
 mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log("MongoDB conectado"))
@@ -126,19 +126,19 @@ const value = req.body.entry?.[0]?.changes?.[0]?.value;
 // DETECTAR RESPUESTA HUMANA
 // =============================
 
-if (value?.statuses) {
+//if (value?.statuses) {
 
-  const status = value.statuses[0];
+  //const status = value.statuses[0];
 
-  if (status.status === "sent") {
+  //if (status.status === "sent") {
 
-    humanActive[status.recipient_id] = Date.now();
+    //humanActive[status.recipient_id] = Date.now();
 
-    console.log("👨‍💼 Humano intervino:", status.recipient_id);
+    //console.log("👨‍💼 Humano intervino:", status.recipient_id);
 
-  }
+  //}
 
-}
+//}
 
 if (!value?.messages) return res.sendStatus(200);
 
@@ -165,13 +165,13 @@ raw.slice(5,8)+" "+
 raw.slice(8);
 const now = Date.now();
 
-if (humanActive[from] && (now - humanActive[from] < HUMAN_TIMEOUT)) {
+//if (humanActive[from] && (now - humanActive[from] < HUMAN_TIMEOUT)) {
 
-console.log("👨‍💼 Conversación en modo humano:", from);
+//console.log("👨‍💼 Conversación en modo humano:", from);
 
-return res.sendStatus(200);
+//return res.sendStatus(200);
 
-}
+//}
 
 if (!userStates[from]) {
 userStates[from] = { step: "menu" };
