@@ -171,7 +171,7 @@ return res.sendStatus(200);
 
 }
 
-if (msg.includes("atienden en todo mexico")) {
+if (msg.includes("atienden en todo mexico") ||msg.includes('atienden')){
 
 await sendMessage(from,
 `Sí, contamos con cobertura en diferentes regiones del país a través de nuestra red comercial.`);
@@ -180,7 +180,7 @@ return res.sendStatus(200);
 
 }
 
-if (msg.includes("venden a pequeñas empresas")) {
+if (msg.includes("venden a pequeñas empresas") ||msg.includes('venden') ) {
 
 await sendMessage(from,
 `Sí. Atendemos desde pequeños negocios hasta grandes industrias.`);
@@ -189,7 +189,7 @@ return res.sendStatus(200);
 
 }
 
-if (msg.includes("venden a particulares")) {
+if (msg.includes("venden a particulares")||msg.includes('particulares')) {
 
 await sendMessage(from,
 `Sí, puedes comprar directamente en nuestra tienda Betita.`);
@@ -224,7 +224,7 @@ return res.sendStatus(200);
 
 const despedidas = [
 "gracias","muchas gracias","ok","vale",
-"perfecto","listo","esta bien","está bien"
+"perfecto","listo","esta bien","está bien","okey"
 ];
 
 if (despedidas.includes(msg)) {
@@ -489,9 +489,10 @@ https://maps.app.goo.gl/1p7j7Z7ihmPFJhUj8
 Av. 2 de Abril
 https://maps.app.goo.gl/JpPS5LqrhEqMhjtm8
 
+Si deseas realizar un pedido o recibir información puedes escribir directamente a nuestro WhatsApp:
 WhatsApp:
 https://wa.me/524612397325
-
+También puedes seguirnos en Instagram:
 Instagram:
 https://www.instagram.com/betita.tienda/`);
 
@@ -501,8 +502,10 @@ if (msg === "2") {
 
 await sendMessage(from,
 `Pedidos Betita:
+Escríbenos en nuestro WhatsApp exclusivo de Betita.
 https://wa.me/524612397325
-
+También puedes seguirnos en Instagram:
+Instagram:
 Instagram:
 https://www.instagram.com/betita.tienda/`);
 
