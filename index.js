@@ -526,8 +526,17 @@ userStates[from].step = "cot_empresa";
 await sendMessage(from,"Nombre de tu empresa:");
 
 }
-
 else if (userStates[from].step === "cot_empresa") {
+
+userStates[from].empresa = msg;
+userStates[from].step = "cot_correo";
+
+await sendMessage(from,"Correo electronico:");
+
+}
+
+
+else if (userStates[from].step === "cot_correo") {
 
 userStates[from].empresa = msg;
 userStates[from].step = "cot_ciudad";
