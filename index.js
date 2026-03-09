@@ -337,24 +337,6 @@ await sendMessage(from, mainMenu);
 
 else if (userStates[from].step === "productos") {
 
-if (msg === "2") {
-
-userStates[from].step = "cot_nombre";
-
-await sendMessage(from,"Para cotizar escribe tu *nombre completo*");
-
-return;
-
-}
-if (msg === "1") {
-
-await sendMessage(from,"Un asesor se pondrá en contacto contigo en breve.");
-
-return;
-
-}
-
-
 let texto = "";
 
 if (msg === "1") {
@@ -423,7 +405,25 @@ Contamos con soluciones especializadas para tu negocio y hogar:
 
 }
 
-await sendMessage(from, texto);
+
+if (msg === "2") {
+
+userStates[from].step = "cot_nombre";
+
+await sendMessage(from,"Para cotizar escribe tu *nombre completo*");
+
+return;
+
+}
+if (msg === "1") {
+
+await sendMessage(from,"Un asesor se pondrá en contacto contigo en breve.");
+
+return;
+
+}
+
+
 
 }
 
@@ -566,11 +566,11 @@ await sendMessage(from,"¿Qué producto o servicio te interesa?");
 }
 else if (userStates[from].step ==="cot_producto"){
   userStates[from].grio=msg;
-  userStates[from].step="cot_comentario"
+  userStates[from].step="cot_comentarios"
   await sendMessage(from,"Escribe un comentario extra para tu cotizacion")
 }
 
-else if (userStates[from].step === "cot_comentario") {
+else if (userStates[from].step === "cot_comentarios") {
 
 userStates[from].producto = msg;
 
