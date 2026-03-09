@@ -329,22 +329,37 @@ await sendMessage(from, mainMenu);
 }
 
 
+
+
 // =============================
 // PRODUCTOS
 // =============================
 
 else if (userStates[from].step === "productos") {
 
+if (msg === "2") {
+
+userStates[from].step = "cot_nombre";
+
+await sendMessage(from,"Para cotizar escribe tu *nombre completo*");
+
+return;
+
+}
+
 let texto = "";
 
 if (msg === "a") {
 
-texto = `Industria alimentaria
+texto =
+`Industria alimentaria
 
+En la industria alimentaria es fundamental garantizar higiene, inocuidad y seguridad en los procesos.
+En Beta contamos con:
 • Detergentes industriales
 • Desinfectantes y sanitizantes
 • Sistemas de limpieza especializados
-• Programas de higiene
+• Programas de higiene para plantas alimentarias
 
 1️⃣ Recomendación de productos
 2️⃣ Solicitar cotización
@@ -354,11 +369,15 @@ texto = `Industria alimentaria
 
 if (msg === "b") {
 
-texto = `Industria institucional
+texto =
+`Industria institucional
 
+Ofrecemos soluciones para mantener espacios seguros, higiénicos y libres de contaminación.
+Algunos productos incluyen:
 • Detergentes profesionales
 • Sanitizantes para cocina
-• Productos para utensilios
+• Productos para lavado de utensilios
+• Sistemas de higiene para restaurantes
 
 1️⃣ Recomendación de productos
 2️⃣ Solicitar cotización
@@ -368,10 +387,13 @@ texto = `Industria institucional
 
 if (msg === "c") {
 
-texto = `Limpieza industrial
+texto =
+`Limpieza industrial
 
+Contamos con soluciones especializadas para procesos industriales:
 • Desengrasantes industriales
 • Detergentes alcalinos y ácidos
+• Desinfectantes profesionales
 • Sistemas de limpieza técnica
 
 1️⃣ Recomendación de productos
@@ -382,11 +404,13 @@ texto = `Limpieza industrial
 
 if (msg === "d") {
 
-texto = `Negocios y hogar
+texto =
+`Negocios y hogar
 
+Contamos con soluciones especializadas para tu negocio y hogar:
 • Detergentes
-• Limpieza de pisos
-• Suavizantes
+• Productos para limpieza de pisos
+• Suavizantes de tela
 • Gel antibacterial
 
 1️⃣ Recomendación de productos
@@ -395,10 +419,9 @@ texto = `Negocios y hogar
 
 }
 
-await sendMessage(from, texto || "Selecciona A, B, C o D");
+await sendMessage(from, texto);
 
 }
-
 
 // =============================
 // SANITIZACIÓN
