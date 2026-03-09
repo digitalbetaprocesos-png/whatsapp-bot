@@ -159,6 +159,53 @@ Selecciona una opción:
 
 
 // =============================
+// RESPUESTAS AUTOMÁTICAS
+// =============================
+
+if (msg.includes("donde se encuentra beta") || msg.includes("dónde se encuentra beta")) {
+
+await sendMessage(from,
+`Nuestro corporativo se encuentra en Celaya, Guanajuato.
+Atendemos clientes en distintas regiones del país.`
+);
+
+return res.sendStatus(200);
+
+}
+
+if (msg.includes("atienden en todo mexico")) {
+
+await sendMessage(from,
+`Sí, contamos con cobertura en diferentes regiones del país a través de nuestra red comercial.`
+);
+
+return res.sendStatus(200);
+
+}
+
+if (msg.includes("venden a pequeñas empresas")) {
+
+await sendMessage(from,
+`Sí. Atendemos desde pequeños negocios hasta grandes industrias.`
+);
+
+return res.sendStatus(200);
+
+}
+
+if (msg.includes("venden a particulares")) {
+
+await sendMessage(from,
+`Sí, puedes comprar directamente en nuestra tienda Betita.`
+);
+
+return res.sendStatus(200);
+
+}
+
+
+
+// =============================
 // SALUDO AUTOMÁTICO
 // =============================
 
@@ -233,8 +280,9 @@ if (msg === "1") {
 
 userStates[from].step = "productos";
 
-await sendMessage(from,
-`Selecciona el área:
+await sendMessage(from,  
+`En Beta desarrollamos soluciones profesionales de limpieza y sanitización para diferentes sectores
+Selecciona el área:
 
 A Industria alimentaria
 B Industria institucional
@@ -307,6 +355,87 @@ await sendMessage(from, mainMenu);
 }
 
 }
+// =============================
+// FORMULARIO COTIZACIÓN
+// =============================
+
+else if (userStates[from].step === "cot_nombre") {
+
+userStates[from].nombre = msg;
+userStates[from].step = "cot_empresa";
+
+await sendMessage(from,"Nombre de tu empresa:");
+
+}
+
+else if (userStates[from].step === "cot_empresa") {
+
+userStates[from].empresa = msg;
+userStates[from].step = "cot_ciudad";
+
+await sendMessage(from,"Ciudad:");
+
+}
+
+else if (userStates[from].step === "cot_ciudad") {
+
+userStates[from].ciudad = msg;
+userStates[from].step = "cot_giro";
+
+await sendMessage(from,"Giro de la empresa:");
+
+}
+
+else if (userStates[from].step === "cot_giro") {
+
+userStates[from].giro = msg;
+userStates[from].step = "cot_producto";
+
+await sendMessage(from,"¿Qué producto o servicio te interesa?");
+
+}
+
+else if (userStates[from].step === "cot_producto") {
+
+userStates[from].producto = msg;
+
+
+// =============================
+// GUARDAR COTIZACIÓN EN MONGO
+// =============================
+
+const nuevaCotizacion = new Cotizacion({
+
+cliente: userStates[from].nombre,
+telefono: from,
+giro: userStates[from].giro,
+respuestas: [
+userStates[from].empresa,
+userStates[from].ciudad,
+userStates[from].producto
+]
+
+});
+
+await nuevaCotizacion.save();
+
+await mensajeCierre(from);
+
+userStates[from].step = "menu";
+
+}
+
+res.sendStatus(200);
+
+} catch (error) {
+
+console.log(error);
+res.sendStatus(500);
+
+}
+
+});
+
 
 
 // =============================
@@ -456,7 +585,7 @@ await sendMessage(from,
 
 
 // =============================
-//         BETITA
+// BETITA
 // =============================
 
 else if (userStates[from].step === "betita") {
