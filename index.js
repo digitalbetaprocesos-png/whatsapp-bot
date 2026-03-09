@@ -2,6 +2,12 @@ const express = require("express");
 const axios = require("axios");
 const nodemailer = require("nodemailer");
 const mongoose = require("mongoose");
+// =============================
+// CONTROL DE INTERVENCIÓN HUMANA
+// =============================
+
+const humanActive = {};
+const HUMAN_TIMEOUT = 30 * 60 * 1000; // 30 minutos
 
 mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log("MongoDB conectado"))
@@ -116,6 +122,23 @@ app.post("/webhook", async (req, res) => {
 try {
 
 const value = req.body.entry?.[0]?.changes?.[0]?.value;
+// =============================
+// DETECTAR RESPUESTA HUMANA
+// =============================
+
+if (value?.statuses) {
+
+  const status = value.statuses[0];
+
+  if (status.status === "sent") {
+
+    humanActive[status.recipient_id] = Date.now();
+
+    console.log("👨‍💼 Humano intervino:", status.recipient_id);
+
+  }
+
+}
 
 if (!value?.messages) return res.sendStatus(200);
 
@@ -140,6 +163,15 @@ let from =
 raw.slice(2,5)+" "+
 raw.slice(5,8)+" "+
 raw.slice(8);
+const now = Date.now();
+
+if (humanActive[from] && (now - humanActive[from] < HUMAN_TIMEOUT)) {
+
+console.log("👨‍💼 Conversación en modo humano:", from);
+
+return res.sendStatus(200);
+
+}
 
 if (!userStates[from]) {
 userStates[from] = { step: "menu" };
@@ -262,10 +294,12 @@ await sendMessage(from,
 `En Beta desarrollamos soluciones profesionales de limpieza y sanitización para diferentes sectores
 Selecciona el área:
 
-1️⃣ Industria alimentaria
-2️⃣ Industria institucional
-3️⃣ Limpieza industrial
-4️⃣ Negocios y hogar`);
+Seleccione una opción:
+
+🅰️ Industria alimentaria  
+🅱️ Industria institucional  
+🅲 Limpieza industrial  
+🅳 Negocios y hogar`);
 
 }
 
@@ -339,7 +373,7 @@ else if (userStates[from].step === "productos") {
 
 let texto = "";
 
-if (msg === "1") {
+if (msg === "a") {
 
 texto =
 `Industria alimentaria
@@ -356,7 +390,7 @@ En Beta contamos con:
 
 }
 
-if (msg === "2") {
+if (msg === "b") {
 
 texto =
 `Industria institucional
@@ -373,7 +407,7 @@ Algunos productos incluyen:
 
 }
 
-if (msg === "3") {
+if (msg === "c") {
 
 texto =
 `Limpieza industrial
@@ -389,7 +423,7 @@ Contamos con soluciones especializadas para procesos industriales:
 
 }
 
-if (msg === "4") {
+if (msg === "d") {
 
 texto =
 `Negocios y hogar
