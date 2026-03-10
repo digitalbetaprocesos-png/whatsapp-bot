@@ -6,8 +6,8 @@ const mongoose = require("mongoose");
 // CONTROL DE INTERVENCIÓN HUMANA
 // =============================
 
-//const humanActive = {};
-//const HUMAN_TIMEOUT = 30 * 60 * 1000; // 30 minutos
+const humanActive = {};
+const HUMAN_TIMEOUT = 30 * 60 * 1000; // 30 minutos
 
 mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log("MongoDB conectado"))
@@ -39,6 +39,11 @@ const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
 
 const userStates = {};
 const processedMessages = new Set();
+
+// limpiar memoria de mensajes procesados cada 10 minutos
+setInterval(() => {
+  processedMessages.clear();
+}, 600000);
 
 
 // =============================
@@ -126,25 +131,52 @@ const value = req.body.entry?.[0]?.changes?.[0]?.value;
 // DETECTAR RESPUESTA HUMANA
 // =============================
 
-//if (value?.statuses) {
+// =============================
+// DETECTAR RESPUESTA HUMANA
+// =============================
 
-  //const status = value.statuses[0];
+if (value?.statuses) {
 
-  //if (status.status === "sent") {
+const status = value.statuses[0];
 
-    //humanActive[status.recipient_id] = Date.now();
+if (status.status === "sent") {
 
-    //console.log("👨‍💼 Humano intervino:", status.recipient_id);
+let raw = status.recipient_id;
 
-  //}
+if (raw.startsWith("521")) {
+raw = "52" + raw.slice(3);
+}
 
-//}
+let numero =
+"+52 " +
+raw.slice(2,5)+" "+
+raw.slice(5,8)+" "+
+raw.slice(8);
+
+humanActive[numero] = Date.now();
+
+console.log("👨‍💼 Humano intervino:", numero);
+
+}
+
+}
+// =============================
+// FILTROS DE EVENTOS
+// =============================
 
 if (!value?.messages) return res.sendStatus(200);
 
 const message = value.messages[0];
 
-if (!message || message.type !== "text") return res.sendStatus(200);
+// evitar responder a mensajes del propio bot
+if (message.from === PHONE_NUMBER_ID) {
+  return res.sendStatus(200);
+}
+
+// solo aceptar mensajes de texto
+if (!message || message.type !== "text") {
+  return res.sendStatus(200);
+}
 
 if (processedMessages.has(message.id)) return res.sendStatus(200);
 
@@ -165,13 +197,13 @@ raw.slice(5,8)+" "+
 raw.slice(8);
 const now = Date.now();
 
-//if (humanActive[from] && (now - humanActive[from] < HUMAN_TIMEOUT)) {
+if (humanActive[from] && (now - humanActive[from] < HUMAN_TIMEOUT)) {
 
-//console.log("👨‍💼 Conversación en modo humano:", from);
+console.log("👨‍💼 Conversación en modo humano:", from);
 
-//return res.sendStatus(200);
+return res.sendStatus(200);
 
-//}
+}
 
 if (!userStates[from]) {
 userStates[from] = { step: "menu" };
@@ -577,7 +609,7 @@ await sendMessage(from,"Correo electronico:");
 
 else if (userStates[from].step === "cot_correo") {
 
-userStates[from].empresa = msg;
+userStates[from].correo = msg;
 userStates[from].step = "cot_ciudad";
 
 await sendMessage(from,"Ciudad:");
@@ -602,7 +634,7 @@ await sendMessage(from,"¿Qué producto o servicio te interesa?");
 
 }
 else if (userStates[from].step ==="cot_producto"){
-  userStates[from].grio=msg;
+  userStates[from].producto=msg;
   userStates[from].step="cot_comentarios"
   await sendMessage(from,"Escribe un comentario extra para tu cotizacion")
 }
@@ -620,7 +652,8 @@ respuestas: [
 userStates[from].empresa,
 userStates[from].correo,
 userStates[from].ciudad,
-userStates[from].producto
+userStates[from].producto,
+userStates[from].comentarios
 ]
 
 });
