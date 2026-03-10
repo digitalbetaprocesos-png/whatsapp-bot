@@ -128,39 +128,6 @@ try {
 
 const value = req.body.entry?.[0]?.changes?.[0]?.value;
 // =============================
-// DETECTAR RESPUESTA HUMANA
-// =============================
-
-// =============================
-// DETECTAR RESPUESTA HUMANA
-// =============================
-
-if (value?.statuses) {
-
-const status = value.statuses[0];
-
-if (status.status === "sent") {
-
-let raw = status.recipient_id;
-
-if (raw.startsWith("521")) {
-raw = "52" + raw.slice(3);
-}
-
-let numero =
-"+52 " +
-raw.slice(2,5)+" "+
-raw.slice(5,8)+" "+
-raw.slice(8);
-
-humanActive[numero] = Date.now();
-
-console.log("👨‍💼 Humano intervino:", numero);
-
-}
-
-}
-// =============================
 // FILTROS DE EVENTOS
 // =============================
 
@@ -183,6 +150,20 @@ if (processedMessages.has(message.id)) return res.sendStatus(200);
 processedMessages.add(message.id);
 
 const msg = message.text.body.toLowerCase().trim();
+// =============================
+// ACTIVAR ASESOR HUMANO
+// =============================
+
+if (msg === "asesor") {
+
+humanActive[from] = Date.now();
+
+await sendMessage(from,
+`Un asesor humano continuará la conversación contigo en breve.`);
+
+return res.sendStatus(200);
+
+}
 
 let raw = message.from;
 
@@ -200,6 +181,21 @@ const now = Date.now();
 if (humanActive[from] && (now - humanActive[from] < HUMAN_TIMEOUT)) {
 
 console.log("👨‍💼 Conversación en modo humano:", from);
+
+return res.sendStatus(200);
+
+}
+// =============================
+// REACTIVAR BOT
+// =============================
+
+if (msg === "menu" || msg === "menú") {
+
+delete humanActive[from];
+
+userStates[from].step = "menu";
+
+await sendMessage(from, mainMenu);
 
 return res.sendStatus(200);
 
@@ -328,10 +324,10 @@ Selecciona el área:
 
 Seleccione una opción:
 
-🅰️ Industria alimentaria  
-🅱️ Industria institucional  
-🅲 Limpieza industrial  
-🅳 Negocios y hogar`);
+🇦 Industria alimentaria
+🇧 Industria institucional
+🇨 Limpieza industrial
+🇩 Negocios y hogar`);
 
 }
 
