@@ -7,44 +7,107 @@
 <style>
 
 body{
-font-family: Arial;
+font-family: Arial, Helvetica, sans-serif;
 display:flex;
 height:100vh;
 margin:0;
+background:#e5ddd5;
 }
 
+/* PANEL CLIENTES */
+
 #clientes{
-width:25%;
+width:30%;
+background:white;
 border-right:1px solid #ccc;
 overflow:auto;
 }
 
+.cliente{
+padding:15px;
+cursor:pointer;
+border-bottom:1px solid #eee;
+font-weight:bold;
+}
+
+.cliente:hover{
+background:#f5f5f5;
+}
+
+/* PANEL CHAT */
+
 #chat{
-width:75%;
+width:70%;
 display:flex;
 flex-direction:column;
 }
 
+#header{
+background:#075E54;
+color:white;
+padding:15px;
+font-weight:bold;
+}
+
+/* MENSAJES */
+
 #mensajes{
 flex:1;
 overflow:auto;
-padding:10px;
+padding:20px;
+display:flex;
+flex-direction:column;
+gap:10px;
 }
+
+/* BURBUJAS */
+
+.mensaje{
+padding:10px 15px;
+border-radius:15px;
+max-width:60%;
+font-size:14px;
+}
+
+.enviado{
+background:#DCF8C6;
+align-self:flex-end;
+}
+
+.recibido{
+background:white;
+align-self:flex-start;
+}
+
+/* BARRA ENVIAR */
 
 #enviar{
 display:flex;
 padding:10px;
+background:#f0f0f0;
 border-top:1px solid #ccc;
 }
 
-.cliente{
+#texto{
+flex:1;
 padding:10px;
-cursor:pointer;
-border-bottom:1px solid #eee;
+border-radius:20px;
+border:1px solid #ccc;
+outline:none;
 }
 
-.cliente:hover{
-background:#f0f0f0;
+button{
+margin-left:10px;
+padding:10px 20px;
+border:none;
+border-radius:20px;
+background:#25D366;
+color:white;
+cursor:pointer;
+}
+
+button:hover{
+background:#20b857;
 }
 
 </style>
@@ -56,10 +119,12 @@ background:#f0f0f0;
 
 <div id="chat">
 
+<div id="header">Selecciona un chat</div>
+
 <div id="mensajes"></div>
 
 <div id="enviar">
-<input id="texto" style="flex:1">
+<input id="texto" placeholder="Escribe un mensaje...">
 <button onclick="enviar()">Enviar</button>
 </div>
 
@@ -77,7 +142,7 @@ const data = await res.json();
 document.getElementById("clientes").innerHTML = data.map(c=>`
 
 <div class="cliente" onclick="abrirChat('${c.numero}')">
-${c.numero}
+📱 ${c.numero}
 </div>
 
 `).join("");
@@ -88,18 +153,28 @@ async function abrirChat(numero){
 
 numeroActual=numero;
 
+document.getElementById("header").innerText="Chat con "+numero;
+
 const res = await fetch("/mensajes/"+numero);
 const data = await res.json();
 
 document.getElementById("mensajes").innerHTML = data.map(m=>`
-<p><b>${m.tipo}</b>: ${m.mensaje}</p>
+
+<div class="mensaje ${m.tipo=="enviado" ? "enviado":"recibido"}">
+${m.mensaje}
+</div>
+
 `).join("");
+
+scrollChat();
 
 }
 
 async function enviar(){
 
 const texto = document.getElementById("texto").value;
+
+if(!texto) return;
 
 await fetch("/responder",{
 method:"POST",
@@ -110,8 +185,15 @@ mensaje:texto
 })
 });
 
+document.getElementById("texto").value="";
+
 abrirChat(numeroActual);
 
+}
+
+function scrollChat(){
+const chat = document.getElementById("mensajes");
+chat.scrollTop = chat.scrollHeight;
 }
 
 cargarClientes();
