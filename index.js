@@ -26,12 +26,22 @@ const CotizacionSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   }
+  
 });
+const ChatSchema = new mongoose.Schema({
+numero:String,
+mensaje:String,
+tipo:String,
+fecha:{ type:Date, default:Date.now }
+});
+
+const Chat = mongoose.model("Chat", ChatSchema);
 
 const Cotizacion = mongoose.model("Cotizacion", CotizacionSchema);
 
 const app = express();
 app.use(express.json());
+app.use(express.static("public"));
 
 const TOKEN = process.env.WHATSAPP_TOKEN;
 const PHONE_NUMBER_ID = process.env.PHONE_NUMBER_ID;
@@ -70,6 +80,11 @@ async function sendMessage(to, message) {
         }
       }
     );
+    await Chat.create({
+numero: to,
+mensaje: message,
+tipo: "bot"
+});
 
   } catch (error) {
 
@@ -150,6 +165,11 @@ if (processedMessages.has(message.id)) return res.sendStatus(200);
 processedMessages.add(message.id);
 
 const msg = message.text.body.toLowerCase().trim();
+await Chat.create({
+numero: message.from,
+mensaje: msg,
+tipo: "cliente"
+});
 // =============================
 // ACTIVAR ASESOR HUMANO
 // =============================
@@ -677,7 +697,57 @@ res.sendStatus(500);
 }
 
 });
+// =============================
+// PANEL DE CHATS
+// =============================
 
+app.get("/clientes", async (req,res)=>{
+
+const clientes = await Chat.distinct("numero");
+
+res.json(clientes.map(n=>({numero:n})));
+
+});
+
+
+app.get("/mensajes/:numero", async (req,res)=>{
+
+const mensajes = await Chat.find({numero:req.params.numero})
+.sort({fecha:1});
+
+res.json(mensajes);
+
+});
+
+
+app.post("/responder", async (req,res)=>{
+
+const {numero,mensaje} = req.body;
+
+await axios.post(
+`https://graph.facebook.com/v24.0/${PHONE_NUMBER_ID}/messages`,
+{
+messaging_product:"whatsapp",
+to:numero,
+text:{body:mensaje}
+},
+{
+headers:{
+Authorization:`Bearer ${TOKEN}`,
+"Content-Type":"application/json"
+}
+}
+);
+
+await Chat.create({
+numero:numero,
+mensaje:mensaje,
+tipo:"humano"
+});
+
+res.send("ok");
+
+});
 
 const PORT = process.env.PORT || 3000;
 

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Panel WhatsApp</title>
+
+<style>
+
+body{
+font-family: Arial;
+display:flex;
+height:100vh;
+margin:0;
+}
+
+#clientes{
+width:25%;
+border-right:1px solid #ccc;
+overflow:auto;
+}
+
+#chat{
+width:75%;
+display:flex;
+flex-direction:column;
+}
+
+#mensajes{
+flex:1;
+overflow:auto;
+padding:10px;
+}
+
+#enviar{
+display:flex;
+padding:10px;
+border-top:1px solid #ccc;
+}
+
+.cliente{
+padding:10px;
+cursor:pointer;
+border-bottom:1px solid #eee;
+}
+
+.cliente:hover{
+background:#f0f0f0;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="clientes"></div>
+
+<div id="chat">
+
+<div id="mensajes"></div>
+
+<div id="enviar">
+<input id="texto" style="flex:1">
+<button onclick="enviar()">Enviar</button>
+</div>
+
+</div>
+
+<script>
+
+let numeroActual="";
+
+async function cargarClientes(){
+
+const res = await fetch("/clientes");
+const data = await res.json();
+
+document.getElementById("clientes").innerHTML = data.map(c=>`
+
+<div class="cliente" onclick="abrirChat('${c.numero}')">
+${c.numero}
+</div>
+
+`).join("");
+
+}
+
+async function abrirChat(numero){
+
+numeroActual=numero;
+
+const res = await fetch("/mensajes/"+numero);
+const data = await res.json();
+
+document.getElementById("mensajes").innerHTML = data.map(m=>`
+<p><b>${m.tipo}</b>: ${m.mensaje}</p>
+`).join("");
+
+}
+
+async function enviar(){
+
+const texto = document.getElementById("texto").value;
+
+await fetch("/responder",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({
+numero:numeroActual,
+mensaje:texto
+})
+});
+
+abrirChat(numeroActual);
+
+}
+
+cargarClientes();
+
+</script>
+
+</body>
+
+</html>
