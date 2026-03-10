@@ -643,6 +643,7 @@ const nuevaCotizacion = new Cotizacion({
 cliente: userStates[from].nombre,
 telefono: from,
 giro: userStates[from].giro,
+nombreE:userStates[from].empresa, 
 respuestas: [
 userStates[from].empresa,
 userStates[from].correo,
