@@ -636,9 +636,6 @@ await sendMessage(from,"Escribe un comentario extra para tu cotizacion por ejemp
 }
 
 else if (userStates[from].step === "cot_comentarios") {
-
-userStates[from].producto = msg;
-
 const nuevaCotizacion = new Cotizacion({
 
 cliente: userStates[from].nombre,
