@@ -92,7 +92,7 @@ Nuestro equipo revisará tu solicitud y se pondrá en contacto contigo lo antes 
 Mientras tanto, puedes conocer más sobre nuestras soluciones en:
 🌐 www.betaprocesos.com.mx`
 );
-
+delete userStates[from];
 }
 
 
