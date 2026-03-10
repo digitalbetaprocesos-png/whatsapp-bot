@@ -409,7 +409,7 @@ return;
 }
 if (msg === "1") {
 
-await sendMessage(from,"Un asesor se pondrá en contacto contigo en breve.");
+await sendMessage(from,"Escribenos tu nombre completo y un asesor se pondrá en contacto contigo en breve.");
 return;
 }
 
@@ -534,7 +534,7 @@ await sendMessage(from,"Para cotizar escribe tu *nombre completo*");
 if (msg === "2") {
 
 await sendMessage(from,
-"Un asesor se pondrá en contacto contigo en breve.");
+"Escribenos tu nombre completo y un asesor se pondrá en contacto contigo en breve.");
 
 }
 
