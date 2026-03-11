@@ -111,7 +111,9 @@ await sendMessage(from,
 `Gracias por contactar a Beta.
 Nuestro equipo revisará tu solicitud y se pondrá en contacto contigo lo antes posible.
 Mientras tanto, puedes conocer más sobre nuestras soluciones en:
-🌐 www.betaprocesos.com.mx`
+🌐 www.betaprocesos.com.mx 
+para hacer otra consulta presiona 0`
+
 );
 delete userStates[from];
 }

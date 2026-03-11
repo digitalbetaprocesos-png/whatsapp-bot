@@ -117,6 +117,7 @@ max-width:65%;
 font-size:14px;
 line-height:1.4;
 box-shadow:0 1px 1px rgba(0,0,0,0.1);
+position:relative;
 }
 
 .enviado{
@@ -127,6 +128,28 @@ align-self:flex-end;
 .recibido{
 background:white;
 align-self:flex-start;
+}
+
+/* FLECHAS */
+
+.enviado::after{
+content:"";
+position:absolute;
+right:-6px;
+top:10px;
+border-left:6px solid #d9fdd3;
+border-top:6px solid transparent;
+border-bottom:6px solid transparent;
+}
+
+.recibido::after{
+content:"";
+position:absolute;
+left:-6px;
+top:10px;
+border-right:6px solid white;
+border-top:6px solid transparent;
+border-bottom:6px solid transparent;
 }
 
 /* HORA */
@@ -177,8 +200,6 @@ background:#20b857;
 
 <body>
 
-<!-- SIDEBAR -->
-
 <div id="sidebar">
 
 <div id="sidebarHeader">
@@ -190,8 +211,6 @@ Panel de Chats
 <div id="clientes"></div>
 
 </div>
-
-<!-- CHAT -->
 
 <div id="chat">
 
@@ -241,6 +260,7 @@ limpio = limpio.slice(2);
 else if(limpio.startsWith("1") && limpio.length === 11){
 limpio = limpio.slice(1);
 }
+
 numerosUnicos[limpio] = limpio;
 
 });
@@ -249,42 +269,13 @@ const lista = Object.values(numerosUnicos);
 
 document.getElementById("clientes").innerHTML = lista.map(numero=>`
 
-<div class="cliente" onclick="abrirChat('${numero}')">
+<div class="cliente" onclick="abrirChat('${numero}', this)">
 📱 +52 ${numero.slice(0,3)} ${numero.slice(3,6)} ${numero.slice(6)}
 </div>
 
 `).join("");
 
 }
-/* MOSTRAR CLIENTES */
-
-function mostrarClientes(data){
-
-document.getElementById("clientes").innerHTML = data.map(c=>`
-
-<div class="cliente" onclick="abrirChat('${c.numero}', this)">
-
-<span>📱 ${c.numero}</span>
-
-</div>
-
-`).join("");
-
-}
-
-/* BUSCAR */
-
-document.getElementById("buscar").addEventListener("input",(e)=>{
-
-const texto = e.target.value.toLowerCase();
-
-const filtrados = listaClientes.filter(c=>
-c.numero.includes(texto)
-);
-
-mostrarClientes(filtrados);
-
-});
 
 /* ABRIR CHAT */
 
@@ -306,7 +297,7 @@ document.getElementById("contador").innerText=data.length+" mensajes";
 
 document.getElementById("mensajes").innerHTML = data.map(m=>`
 
-<div class="mensaje ${m.tipo=="enviado" ? "enviado":"recibido"}">
+<div class="mensaje ${m.tipo === "bot" ? "enviado":"recibido"}">
 
 ${m.mensaje}
 
@@ -356,9 +347,7 @@ abrirChat(numeroActual);
 document.getElementById("texto").addEventListener("keypress",(e)=>{
 
 if(e.key==="Enter"){
-
 enviar();
-
 }
 
 });
@@ -378,9 +367,7 @@ chat.scrollTop=chat.scrollHeight;
 setInterval(()=>{
 
 if(numeroActual){
-
 abrirChat(numeroActual);
-
 }
 
 },3000);
