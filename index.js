@@ -659,7 +659,7 @@ await sendMessage(from,"¿Qué producto o servicio te interesa?");
 else if (userStates[from].step ==="cot_producto"){
   userStates[from].producto=msg;
   userStates[from].step="cot_comentarios"
-await sendMessage(from,"Escribe un comentario extra para tu cotizacion por ejemplo:\n¿Qué tipo de superfice desea aplicar el servicio?\n¿Qué tipo desea eliminar?")
+await sendMessage(from,"Escribe un comentario extra para tu cotizacion por ejemplo:\n¿Qué tipo de superfice desea aplicar el servicio?\n¿Qué tipo de suciedad desea eliminar?")
 
 }
 else if (userStates[from].step ==="cot_comentarios"){
