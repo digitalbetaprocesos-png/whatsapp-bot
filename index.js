@@ -9,6 +9,13 @@ const mongoose = require("mongoose");
 const humanActive = {};
 const HUMAN_TIMEOUT = 30 * 60 * 1000; // 30 minutos
 
+function normalizarNumero(numero){
+
+return numero
+.replace(/\D/g,"")   // quita + espacios
+.replace(/^52/,"");  // quita prefijo México
+
+}
 mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log("MongoDB conectado"))
 .catch(err => console.error(err));
@@ -166,11 +173,10 @@ processedMessages.add(message.id);
 
 const msg = message.text.body.toLowerCase().trim();
 await Chat.create({
-numero: message.from,
+numero: normalizarNumero(message.from),
 mensaje: msg,
 tipo: "cliente"
-});
-// =============================
+});// =============================
 // ACTIVAR ASESOR HUMANO
 // =============================
 
@@ -185,18 +191,7 @@ return res.sendStatus(200);
 
 }
 
-let raw = message.from;
-
-if (raw.startsWith("521")) {
-  raw = "52" + raw.slice(3);
-}
-
-let from =
-"+52 " +
-raw.slice(2,5)+" "+
-raw.slice(5,8)+" "+
-raw.slice(8);
-const now = Date.now();
+const from = normalizarNumero(message.from);const now = Date.now();
 
 if (humanActive[from] && (now - humanActive[from] < HUMAN_TIMEOUT)) {
 
@@ -712,18 +707,19 @@ res.json(clientes.map(n=>({numero:n})));
 
 app.get("/mensajes/:numero", async (req,res)=>{
 
-const mensajes = await Chat.find({numero:req.params.numero})
+const numero = normalizarNumero(req.params.numero);
+
+const mensajes = await Chat.find({numero})
 .sort({fecha:1});
 
 res.json(mensajes);
 
 });
 
-
 app.post("/responder", async (req,res)=>{
 
-const {numero,mensaje} = req.body;
-
+const numero = normalizarNumero(req.body.numero);
+const mensaje = req.body.mensaje;
 await axios.post(
 `https://graph.facebook.com/v24.0/${PHONE_NUMBER_ID}/messages`,
 {
@@ -739,8 +735,9 @@ Authorization:`Bearer ${TOKEN}`,
 }
 );
 
-await Chat.create({
-numero:numero,
+
+await Chat.create({ 
+numero:normalizarNumero(to),
 mensaje:mensaje,
 tipo:"humano"
 });
