@@ -224,13 +224,36 @@ let listaClientes=[];
 async function cargarClientes(){
 
 const res = await fetch("/clientes");
+const data = await res.json();
 
-listaClientes = await res.json();
+const numerosUnicos = {};
 
-mostrarClientes(listaClientes);
+data.forEach(c=>{
 
+let limpio = c.numero.replace(/\D/g,"");
+
+if(limpio.startsWith("521")){
+limpio = limpio.slice(3);
+}
+else if(limpio.startsWith("52")){
+limpio = limpio.slice(2);
 }
 
+numerosUnicos[limpio] = limpio;
+
+});
+
+const lista = Object.values(numerosUnicos);
+
+document.getElementById("clientes").innerHTML = lista.map(numero=>`
+
+<div class="cliente" onclick="abrirChat('${numero}')">
+📱 +52 ${numero.slice(0,3)} ${numero.slice(3,6)} ${numero.slice(6)}
+</div>
+
+`).join("");
+
+}
 /* MOSTRAR CLIENTES */
 
 function mostrarClientes(data){
