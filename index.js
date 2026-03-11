@@ -87,7 +87,7 @@ async function sendMessage(to, message) {
       }
     );
     await Chat.create({
-numero: to,
+numero: normalizarNumero(to),
 mensaje: message,
 tipo: "bot"
 });
