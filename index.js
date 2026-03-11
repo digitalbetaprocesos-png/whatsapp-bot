@@ -718,13 +718,22 @@ res.json(clientes.map(n=>({numero:n})));
 
 app.get("/mensajes/:numero", async (req,res)=>{
 
-const mensajes = await Chat.find({numero:req.params.numero})
-.sort({fecha:1});
+const numero = normalizarNumero(req.params.numero);
+
+const variantes = [
+numero,
+"52"+numero,
+"521"+numero,
+"1"+numero
+];
+
+const mensajes = await Chat.find({
+numero: { $in: variantes }
+}).sort({fecha:1});
 
 res.json(mensajes);
 
 });
-
 
 app.post("/responder", async (req,res)=>{
 
