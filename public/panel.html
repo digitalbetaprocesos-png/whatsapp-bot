@@ -238,7 +238,9 @@ limpio = limpio.slice(3);
 else if(limpio.startsWith("52")){
 limpio = limpio.slice(2);
 }
-
+else if(limpio.startsWith("1") && limpio.length === 11){
+limpio = limpio.slice(1);
+}
 numerosUnicos[limpio] = limpio;
 
 });
