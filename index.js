@@ -172,7 +172,7 @@ processedMessages.add(message.id);
 
 const msg = message.text.body.toLowerCase().trim();
 await Chat.create({
-numero: message.from,
+numero: normalizarNumero(message.from),
 mensaje: msg,
 tipo: "cliente"
 });
