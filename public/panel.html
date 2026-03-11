@@ -356,12 +356,15 @@ enviar();
 
 function scrollChat(){
 
-const chat=document.getElementById("mensajes");
+const chat = document.getElementById("mensajes");
 
-chat.scrollTop=chat.scrollHeight;
+const estaAbajo = chat.scrollHeight - chat.scrollTop - chat.clientHeight < 100;
 
+if(estaAbajo){
+chat.scrollTop = chat.scrollHeight;
 }
 
+}
 /* AUTO ACTUALIZAR */
 
 setInterval(()=>{
