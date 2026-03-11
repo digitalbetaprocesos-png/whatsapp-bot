@@ -2,6 +2,7 @@
 <html>
 
 <head>
+<meta charset="UTF-8">
 <title>Panel WhatsApp</title>
 
 <style>
@@ -12,6 +13,8 @@ display:flex;
 height:100vh;
 margin:0;
 background:#e5ddd5;
+background-image:url("https://i.imgur.com/6Iej2c3.png");
+background-size:300px;
 }
 
 /* PANEL CLIENTES */
@@ -23,15 +26,26 @@ border-right:1px solid #ccc;
 overflow:auto;
 }
 
+/* CLIENTE */
+
 .cliente{
-padding:15px;
+display:flex;
+align-items:center;
+gap:10px;
+padding:12px;
 cursor:pointer;
 border-bottom:1px solid #eee;
-font-weight:bold;
+transition:0.2s;
 }
 
 .cliente:hover{
-background:#f5f5f5;
+background:#f0f2f5;
+}
+
+.cliente img{
+width:40px;
+height:40px;
+border-radius:50%;
 }
 
 /* PANEL CHAT */
@@ -42,11 +56,22 @@ display:flex;
 flex-direction:column;
 }
 
+/* HEADER */
+
 #header{
 background:#075E54;
 color:white;
-padding:15px;
+padding:12px 15px;
 font-weight:bold;
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+#header img{
+width:35px;
+height:35px;
+border-radius:50%;
 }
 
 /* MENSAJES */
@@ -63,10 +88,12 @@ gap:10px;
 /* BURBUJAS */
 
 .mensaje{
-padding:10px 15px;
-border-radius:15px;
-max-width:60%;
+padding:10px 14px;
+border-radius:8px;
+max-width:65%;
 font-size:14px;
+position:relative;
+box-shadow:0 1px 1px rgba(0,0,0,0.1);
 }
 
 .enviado{
@@ -77,6 +104,15 @@ align-self:flex-end;
 .recibido{
 background:white;
 align-self:flex-start;
+}
+
+/* HORA */
+
+.hora{
+font-size:11px;
+color:#666;
+margin-top:4px;
+text-align:right;
 }
 
 /* BARRA ENVIAR */
@@ -90,10 +126,12 @@ border-top:1px solid #ccc;
 
 #texto{
 flex:1;
-padding:10px;
-border-radius:20px;
-border:1px solid #ccc;
+padding:12px 15px;
+border-radius:25px;
+border:none;
+background:white;
 outline:none;
+font-size:14px;
 }
 
 button{
@@ -119,7 +157,10 @@ background:#20b857;
 
 <div id="chat">
 
-<div id="header">Selecciona un chat</div>
+<div id="header">
+<img src="https://i.pravatar.cc/40">
+<span id="titulo">Selecciona un chat</span>
+</div>
 
 <div id="mensajes"></div>
 
@@ -134,6 +175,8 @@ background:#20b857;
 
 let numeroActual="";
 
+/* CARGAR CLIENTES */
+
 async function cargarClientes(){
 
 const res = await fetch("/clientes");
@@ -142,18 +185,26 @@ const data = await res.json();
 document.getElementById("clientes").innerHTML = data.map(c=>`
 
 <div class="cliente" onclick="abrirChat('${c.numero}')">
-📱 ${c.numero}
+
+<img src="https://i.pravatar.cc/40">
+
+<div>
+<b>${c.numero}</b>
+</div>
+
 </div>
 
 `).join("");
 
 }
 
+/* ABRIR CHAT */
+
 async function abrirChat(numero){
 
 numeroActual=numero;
 
-document.getElementById("header").innerText="Chat con "+numero;
+document.getElementById("titulo").innerText="Chat con "+numero;
 
 const res = await fetch("/mensajes/"+numero);
 const data = await res.json();
@@ -161,7 +212,13 @@ const data = await res.json();
 document.getElementById("mensajes").innerHTML = data.map(m=>`
 
 <div class="mensaje ${m.tipo=="enviado" ? "enviado":"recibido"}">
+
 ${m.mensaje}
+
+<div class="hora">
+${new Date(m.fecha).toLocaleTimeString()}
+</div>
+
 </div>
 
 `).join("");
@@ -169,6 +226,8 @@ ${m.mensaje}
 scrollChat();
 
 }
+
+/* ENVIAR MENSAJE */
 
 async function enviar(){
 
@@ -191,10 +250,22 @@ abrirChat(numeroActual);
 
 }
 
+/* SCROLL AUTOMATICO */
+
 function scrollChat(){
 const chat = document.getElementById("mensajes");
 chat.scrollTop = chat.scrollHeight;
 }
+
+/* AUTO ACTUALIZAR CHAT */
+
+setInterval(()=>{
+
+if(numeroActual){
+abrirChat(numeroActual);
+}
+
+},3000);
 
 cargarClientes();
 
