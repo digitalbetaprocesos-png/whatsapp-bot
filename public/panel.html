@@ -4,7 +4,8 @@
 <head>
 
 <meta charset="UTF-8">
-<title>CRM WhatsApp</title>
+
+<title>Panel de Atención</title>
 
 <style>
 
@@ -30,6 +31,8 @@ flex-direction:column;
 border-right:1px solid #ddd;
 }
 
+/* HEADER */
+
 #sidebarHeader{
 background:#075E54;
 color:white;
@@ -38,6 +41,8 @@ font-size:18px;
 font-weight:600;
 }
 
+/* BUSCADOR */
+
 #buscar{
 padding:12px;
 border:none;
@@ -45,6 +50,8 @@ border-bottom:1px solid #eee;
 outline:none;
 font-size:14px;
 }
+
+/* CLIENTES */
 
 #clientes{
 flex:1;
@@ -76,6 +83,8 @@ flex:1;
 display:flex;
 flex-direction:column;
 }
+
+/* HEADER CHAT */
 
 #header{
 background:#075E54;
@@ -151,7 +160,6 @@ margin-top:4px;
 color:#666;
 text-align:right;
 }
-
 /* ESTADO */
 
 .estado{
@@ -179,7 +187,6 @@ display:flex;
 gap:5px;
 margin-top:5px;
 }
-
 .tag{
 font-size:11px;
 padding:3px 6px;
@@ -199,6 +206,7 @@ color:black;
 .urgente{
 background:#e53935;
 }
+
 
 /* BARRA ENVIAR */
 
@@ -242,7 +250,7 @@ background:#20b857;
 <div id="sidebar">
 
 <div id="sidebarHeader">
-CRM WhatsApp
+Panel de Chats
 </div>
 
 <input id="buscar" placeholder="Buscar número...">
@@ -275,6 +283,7 @@ Enviar
 <script>
 
 let numeroActual="";
+let listaClientes=[];
 
 /* CARGAR CLIENTES */
 
@@ -283,29 +292,32 @@ async function cargarClientes(){
 const res = await fetch("/clientes");
 const data = await res.json();
 
-const numerosUnicos={};
+const numerosUnicos = {};
 
 data.forEach(c=>{
 
-let limpio=c.numero.replace(/\D/g,"");
+let limpio = c.numero.replace(/\D/g,"");
 
 if(limpio.startsWith("521")){
-limpio=limpio.slice(3);
+limpio = limpio.slice(3);
 }
 else if(limpio.startsWith("52")){
-limpio=limpio.slice(2);
+limpio = limpio.slice(2);
+}
+else if(limpio.startsWith("1") && limpio.length === 11){
+limpio = limpio.slice(1);
 }
 
-numerosUnicos[limpio]=limpio;
+numerosUnicos[limpio] = limpio;
 
 });
 
-const lista=Object.values(numerosUnicos);
+const lista = Object.values(numerosUnicos);
 
 document.getElementById("clientes").innerHTML = lista.map(numero=>`
 
-<div class="cliente" onclick="abrirChat('${numero}',this)">
-📱 +52 ${numero}
+<div class="cliente" onclick="abrirChat('${numero}', this)">
+📱 +52 ${numero.slice(0,3)} ${numero.slice(3,6)} ${numero.slice(6)}
 </div>
 
 `).join("");
@@ -313,7 +325,6 @@ document.getElementById("clientes").innerHTML = lista.map(numero=>`
 }
 
 /* ABRIR CHAT */
-
 async function abrirChat(numero,elemento){
 
 numeroActual=numero;
@@ -369,6 +380,30 @@ scrollChat();
 
 }
 
+/* FUNCIONES CRM */
+
+async function favorito(id){
+
+await fetch("/favorito/"+id,{
+method:"POST"
+});
+
+abrirChat(numeroActual);
+
+}
+
+async function marcarLeido(id){
+
+await fetch("/leido/"+id,{
+method:"POST"
+});
+
+abrirChat(numeroActual);
+
+}
+
+
+
 /* ENVIAR */
 
 async function enviar(){
@@ -398,28 +433,6 @@ abrirChat(numeroActual);
 
 }
 
-/* FUNCIONES CRM */
-
-async function favorito(id){
-
-await fetch("/favorito/"+id,{
-method:"POST"
-});
-
-abrirChat(numeroActual);
-
-}
-
-async function marcarLeido(id){
-
-await fetch("/leido/"+id,{
-method:"POST"
-});
-
-abrirChat(numeroActual);
-
-}
-
 /* ENTER PARA ENVIAR */
 
 document.getElementById("texto").addEventListener("keypress",(e)=>{
@@ -434,12 +447,15 @@ enviar();
 
 function scrollChat(){
 
-const chat=document.getElementById("mensajes");
+const chat = document.getElementById("mensajes");
 
-chat.scrollTop=chat.scrollHeight;
+const estaAbajo = chat.scrollHeight - chat.scrollTop - chat.clientHeight < 100;
 
+if(estaAbajo){
+chat.scrollTop = chat.scrollHeight;
 }
 
+}
 /* AUTO ACTUALIZAR */
 
 setInterval(()=>{
