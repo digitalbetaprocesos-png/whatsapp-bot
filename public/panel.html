@@ -246,7 +246,62 @@ font-weight:600;
 #botonEnviar:hover{
 background:#20b857;
 }
+#infoPanel{
+width:260px;
+background:white;
+border-left:1px solid #ddd;
+display:flex;
+flex-direction:column;
+}
 
+#infoHeader{
+padding:16px;
+background:#f5f5f5;
+font-weight:600;
+border-bottom:1px solid #eee;
+}
+
+.infoBloque{
+padding:15px;
+}
+
+.infoTitulo{
+font-size:14px;
+font-weight:600;
+margin-bottom:10px;
+}
+
+#listaEtiquetas{
+display:flex;
+flex-wrap:wrap;
+gap:6px;
+margin-bottom:10px;
+}
+
+.tagCRM{
+background:#e7f3ff;
+padding:5px 8px;
+border-radius:6px;
+font-size:12px;
+}
+
+#nuevaEtiqueta{
+width:100%;
+padding:8px;
+border:1px solid #ccc;
+border-radius:6px;
+margin-bottom:8px;
+}
+
+#infoPanel button{
+width:100%;
+padding:8px;
+border:none;
+background:#25D366;
+color:white;
+border-radius:6px;
+cursor:pointer;
+}
 </style>
 
 </head>
@@ -295,6 +350,29 @@ Panel de Chats
 
 <button id="botonEnviar" onclick="enviar()">
 Enviar
+</button>
+
+</div>
+
+</div>
+<div id="infoPanel">
+
+<div id="infoHeader">
+Información de contacto
+</div>
+
+<div class="infoBloque">
+
+<div class="infoTitulo">
+Etiquetas
+</div>
+
+<div id="listaEtiquetas"></div>
+
+<input id="nuevaEtiqueta" placeholder="Añade una etiqueta">
+
+<button onclick="agregarEtiqueta()">
+Agregar
 </button>
 
 </div>
@@ -398,6 +476,7 @@ ${m.tag==="urgente"?'<span class="tag urgente">Urgente</span>':""}
 `).join("");
 
 scrollChat();
+cargarEtiquetas();
 
 }
 
@@ -445,7 +524,42 @@ tag:etiqueta
 });
 
 }
+async function agregarEtiqueta(){
 
+const tag = document.getElementById("nuevaEtiqueta").value;
+
+if(!tag || !numeroActual) return;
+
+await fetch("/etiqueta",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+numero:numeroActual,
+tag
+})
+
+});
+
+document.getElementById("nuevaEtiqueta").value="";
+
+cargarEtiquetas();
+
+}
+async function cargarEtiquetas(){
+
+const res = await fetch("/etiquetas/"+numeroActual);
+
+const data = await res.json();
+
+document.getElementById("listaEtiquetas").innerHTML =
+data.map(e=>`<span class="tagCRM">${e}</span>`).join("");
+
+}
 /* ENVIAR */
 
 async function enviar(){
