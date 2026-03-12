@@ -424,14 +424,15 @@ numerosUnicos[limpio] = limpio;
 
 const lista = Object.values(numerosUnicos);
 
-document.getElementById("clientes").innerHTML = lista.map(numero=>`
+document.getElementById("clientes").innerHTML = data.map(c=>`
 
-<div class="cliente" onclick="abrirChat('${numero}', this)">
-📱 +52 ${numero.slice(0,3)} ${numero.slice(3,6)} ${numero.slice(6)}
+<div class="cliente" onclick="abrirChat('${c.numero}', this)">
+👤 ${c.nombre}
+<br>
+📱 +52 ${c.numero.slice(0,3)} ${c.numero.slice(3,6)} ${c.numero.slice(6)}
 </div>
 
 `).join("");
-
 }
 
 /* ABRIR CHAT */

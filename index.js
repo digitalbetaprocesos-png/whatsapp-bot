@@ -36,6 +36,7 @@ const CotizacionSchema = new mongoose.Schema({
 });
 const ChatSchema = new mongoose.Schema({
 numero:String,
+nombre: String,
 mensaje:String,
 tipo:String,
 fecha:{ type:Date, default:Date.now },
@@ -154,6 +155,7 @@ app.post("/webhook", async (req, res) => {
 try {
 
 const value = req.body.entry?.[0]?.changes?.[0]?.value;
+const nombreCliente = value.contacts?.[0]?.profile?.name || "Cliente";
 // =============================
 // FILTROS DE EVENTOS
 // =============================
@@ -179,6 +181,7 @@ processedMessages.add(message.id);
 const msg = message.text.body.toLowerCase().trim();
 await Chat.create({
 numero: normalizarNumero(message.from),
+nombre: nombreCliente,
 mensaje: msg,
 tipo: "cliente"
 });
@@ -712,15 +715,23 @@ res.sendStatus(500);
 // =============================
 // PANEL DE CHATS
 // =============================
-
 app.get("/clientes", async (req,res)=>{
 
-const clientes = await Chat.distinct("numero");
+const chats = await Chat.aggregate([
+{
+$group:{
+_id:"$numero",
+nombre:{$first:"$nombre"}
+}
+}
+]);
 
-res.json(clientes.map(n=>({numero:n})));
+res.json(chats.map(c=>({
+numero:c._id,
+nombre:c.nombre || "Cliente"
+})));
 
 });
-
 
 app.get("/mensajes/:numero", async (req,res)=>{
 
