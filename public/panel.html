@@ -207,7 +207,13 @@ color:black;
 background:#e53935;
 }
 
-
+#etiquetaSelect{
+padding:5px;
+border-radius:6px;
+border:none;
+margin-right:10px;
+font-size:13px;
+}
 /* BARRA ENVIAR */
 
 #enviar{
@@ -262,10 +268,25 @@ Panel de Chats
 <div id="chat">
 
 <div id="header">
+
 <span id="titulo">Selecciona un chat</span>
+
+<div>
+
+<select id="etiquetaSelect" onchange="guardarEtiqueta()">
+
+<option value="">Etiqueta</option>
+<option value="nuevo">🟢 Nuevo</option>
+<option value="pendiente">🟡 Pendiente</option>
+<option value="urgente">🔴 Urgente</option>
+
+</select>
+
 <span id="contador"></span>
+
 </div>
 
+</div>
 <div id="mensajes"></div>
 
 <div id="enviar">
@@ -402,7 +423,28 @@ abrirChat(numeroActual);
 
 }
 
+async function guardarEtiqueta(){
 
+const etiqueta = document.getElementById("etiquetaSelect").value;
+
+if(!numeroActual) return;
+
+await fetch("/etiqueta",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+numero:numeroActual,
+tag:etiqueta
+})
+
+});
+
+}
 
 /* ENVIAR */
 

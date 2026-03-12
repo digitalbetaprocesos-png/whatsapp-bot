@@ -774,6 +774,22 @@ app.post("/leido/:id", async (req,res)=>{
 await Chat.findByIdAndUpdate(req.params.id,{leido:true});
 res.sendStatus(200);
 });
+// =============================
+// GUARDAR ETIQUETA
+// =============================
+
+app.post("/etiqueta", async (req,res)=>{
+
+const {numero, tag} = req.body;
+
+await Chat.updateMany(
+{numero},
+{tag}
+);
+
+res.sendStatus(200);
+
+});
 
 
 const PORT = process.env.PORT || 3000;
