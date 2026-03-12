@@ -736,6 +736,10 @@ numero: { $in: variantes }
 res.json(mensajes);
 
 });
+app.post("/favorito/:id", async (req,res)=>{
+await Chat.findByIdAndUpdate(req.params.id,{favorito:true});
+res.sendStatus(200);
+});
 
 app.post("/responder", async (req,res)=>{
 
@@ -765,6 +769,12 @@ tipo:"humano"
 res.send("ok");
 
 });
+
+app.post("/leido/:id", async (req,res)=>{
+await Chat.findByIdAndUpdate(req.params.id,{leido:true});
+res.sendStatus(200);
+});
+
 
 const PORT = process.env.PORT || 3000;
 
