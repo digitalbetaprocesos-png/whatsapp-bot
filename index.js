@@ -31,14 +31,18 @@ const CotizacionSchema = new mongoose.Schema({
   fecha: {
     type: Date,
     default: Date.now
-  }
+  },
   
 });
 const ChatSchema = new mongoose.Schema({
 numero:String,
 mensaje:String,
 tipo:String,
-fecha:{ type:Date, default:Date.now }
+fecha:{ type:Date, default:Date.now },
+etiquetas: [String],
+  leido: Boolean,
+  favorito: Boolean
+  
 });
 
 const Chat = mongoose.model("Chat", ChatSchema);
