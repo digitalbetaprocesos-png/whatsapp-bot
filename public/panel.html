@@ -337,6 +337,17 @@ Panel de Chats
 
 </select>
 
+<button onclick="borrarChat()" style="
+background:#e53935;
+color:white;
+border:none;
+padding:6px 10px;
+border-radius:6px;
+margin-right:10px;
+cursor:pointer;">
+🗑 Borrar
+</button>
+
 <span id="contador"></span>
 
 </div>
@@ -598,6 +609,22 @@ enviar();
 }
 
 });
+async function borrarChat(){
+
+if(!numeroActual) return;
+
+const confirmar = confirm("¿Borrar toda la conversación?");
+
+if(!confirmar) return;
+
+await fetch("/borrar/"+numeroActual,{
+method:"DELETE"
+});
+
+document.getElementById("mensajes").innerHTML="";
+document.getElementById("contador").innerText="0 mensajes";
+
+}
 
 /* SCROLL */
 

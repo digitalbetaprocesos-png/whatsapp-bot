@@ -781,20 +781,53 @@ res.sendStatus(200);
 // =============================
 // GUARDAR ETIQUETA
 // =============================
-
 app.post("/etiqueta", async (req,res)=>{
 
 const {numero, tag} = req.body;
 
 await Chat.updateMany(
 {numero},
-{tag}
+{ $addToSet: { etiquetas: tag } }
 );
 
 res.sendStatus(200);
 
 });
+// =============================
+// OBTENER ETIQUETAS
+// =============================
 
+app.get("/etiquetas/:numero", async (req,res)=>{
+
+const numero = normalizarNumero(req.params.numero);
+
+const mensajes = await Chat.find({numero});
+
+let etiquetas = [];
+
+mensajes.forEach(m => {
+
+if(m.etiquetas){
+etiquetas = etiquetas.concat(m.etiquetas);
+}
+
+});
+
+etiquetas = [...new Set(etiquetas)];
+
+res.json(etiquetas);
+
+});
+
+app.delete("/borrar/:numero", async (req,res)=>{
+
+const numero = normalizarNumero(req.params.numero);
+
+await Chat.deleteMany({numero});
+
+res.json({ok:true});
+
+});
 
 const PORT = process.env.PORT || 3000;
 
