@@ -406,13 +406,12 @@ let numeroActual="";
 let listaClientes=[];
 
 /* CARGAR CLIENTES */
-
 async function cargarClientes(){
 
 const res = await fetch("/clientes");
 const data = await res.json();
 
-const numerosUnicos = {};
+const clientes = {};
 
 data.forEach(c=>{
 
@@ -428,16 +427,14 @@ else if(limpio.startsWith("1") && limpio.length === 11){
 limpio = limpio.slice(1);
 }
 
-numerosUnicos[limpio] = true;
+clientes[limpio] = c.nombre || "Cliente";
 
 });
 
-const lista = Object.keys(numerosUnicos);
-
-document.getElementById("clientes").innerHTML = lista.map(numero=>`
+document.getElementById("clientes").innerHTML = Object.keys(clientes).map(numero=>`
 
 <div class="cliente" onclick="abrirChat('${numero}', this)">
-👤 Cliente
+👤 ${clientes[numero]}
 <br>
 📱 +52 ${numero.slice(0,3)} ${numero.slice(3,6)} ${numero.slice(6)}
 </div>
@@ -694,8 +691,8 @@ alert("Contacto guardado");
 
 setInterval(async()=>{
 
-if(numeroActual) return;
-const res=await fetch("/mensajes"+numeroActual)
+if(!numeroActual) return;
+const res=await fetch("/mensajes"+!numeroActual)
 const data=await res.json();
 document.getElementById("contador").innerText.length+"mensajes";
 

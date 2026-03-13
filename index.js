@@ -793,7 +793,7 @@ Authorization:`Bearer ${TOKEN}`,
 );
 
 await Chat.create({
-numero:normalizarNumero(),
+numero:normalizarNumero(numero),
 mensaje:mensaje,
 tipo:"humano"
 });
