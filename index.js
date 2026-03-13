@@ -871,6 +871,32 @@ await Chat.updateOne(
 }
 res.send("numeros normalizados");
 });
+app.get("/actualizar-nombres", async (req,res)=>{
+
+const chats = await Chat.find();
+
+for(const c of chats){
+
+if(!c.nombre || c.nombre==="Cliente"){
+
+const contacto = await Contacto.findOne({numero:c.numero});
+
+if(contacto && contacto.nombre){
+
+await Chat.updateMany(
+{numero:c.numero},
+{$set:{nombre:contacto.nombre}}
+);
+
+}
+
+}
+
+}
+
+res.send("Nombres actualizados");
+
+});
 // gauardar contacto
 app.post("/guardar-contacto", async (req,res)=>{
 
