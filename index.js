@@ -866,8 +866,9 @@ await Chat.updateOne(
 {_id:c._id},
 {numero:numeroLimpio}
 );
-
 }
+res.send("numeros normalizados");
+});
 // gauardar contacto
 res.send("Numeros normalizados");
 app.post("/guardar-contacto", async (req,res)=>{
@@ -883,7 +884,7 @@ await Contacto.findOneAndUpdate(
 res.json({ok:true});
 
 });
-});
+
 // obtener contacto 
 app.get("/contacto/:numero", async (req,res)=>{
 
