@@ -45,6 +45,21 @@ etiquetas: [String],
   favorito: Boolean
   
 });
+const ContactoSchema = new mongoose.Schema({
+
+numero:String,
+nombre:String,
+empresa:String,
+correo:String,
+notas:String,
+fecha:{
+type:Date,
+default:Date.now
+}
+
+});
+
+const Contacto = mongoose.model("Contacto", ContactoSchema);
 
 const Chat = mongoose.model("Chat", ChatSchema);
 
@@ -853,8 +868,38 @@ await Chat.updateOne(
 );
 
 }
-
+// gauardar contacto
 res.send("Numeros normalizados");
+app.post("/guardar-contacto", async (req,res)=>{
+
+const {numero,nombre,empresa,correo,notas} = req.body;
+
+await Contacto.findOneAndUpdate(
+{numero},
+{numero,nombre,empresa,correo,notas},
+{upsert:true}
+);
+
+res.json({ok:true});
+
+});
+});
+// obtener contacto 
+app.get("/contacto/:numero", async (req,res)=>{
+
+const numero = normalizarNumero(req.params.numero);
+
+const contacto = await Contacto.findOne({numero});
+
+res.json(contacto || {});
+
+});
+//buscar contacto
+app.get("/contactos", async (req,res)=>{
+
+const contactos = await Contacto.find().sort({nombre:1});
+
+res.json(contactos);
 
 });
 const PORT = process.env.PORT || 3000;

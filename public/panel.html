@@ -385,7 +385,17 @@ Etiquetas
 <button onclick="agregarEtiqueta()">
 Agregar
 </button>
+<div class="infoTitulo">Contacto</div>
 
+<input id="nombreContacto" placeholder="Nombre">
+
+<input id="empresaContacto" placeholder="Empresa">
+
+<input id="correoContacto" placeholder="Correo">
+
+<textarea id="notasContacto" placeholder="Notas"></textarea>
+
+<button onclick="guardarContacto()">Guardar contacto</button>
 </div>
 
 </div>
@@ -489,6 +499,13 @@ ${m.tag==="urgente"?'<span class="tag urgente">Urgente</span>':""}
 
 scrollChat();
 cargarEtiquetas();
+const contacto = await fetch("/contacto/"+numeroActual);
+const dataContacto = await contacto.json();
+
+document.getElementById("nombreContacto").value = dataContacto.nombre || "";
+document.getElementById("empresaContacto").value = dataContacto.empresa || "";
+document.getElementById("correoContacto").value = dataContacto.correo || "";
+document.getElementById("notasContacto").value = dataContacto.notas || "";
 
 }
 
@@ -639,6 +656,34 @@ const estaAbajo = chat.scrollHeight - chat.scrollTop - chat.clientHeight < 100;
 if(estaAbajo){
 chat.scrollTop = chat.scrollHeight;
 }
+
+}
+async function guardarContacto(){
+
+const nombre = document.getElementById("nombreContacto").value;
+const empresa = document.getElementById("empresaContacto").value;
+const correo = document.getElementById("correoContacto").value;
+const notas = document.getElementById("notasContacto").value;
+
+await fetch("/guardar-contacto",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+numero:numeroActual,
+nombre,
+empresa,
+correo,
+notas
+})
+
+});
+
+alert("Contacto guardado");
 
 }
 /* AUTO ACTUALIZAR */
