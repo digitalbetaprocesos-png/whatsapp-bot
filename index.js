@@ -839,7 +839,24 @@ await Chat.deleteMany({numero});
 res.json({ok:true});
 
 });
+app.get("/limpiar", async (req,res)=>{
 
+const chats = await Chat.find();
+
+for(const c of chats){
+
+const numeroLimpio = normalizarNumero(c.numero);
+
+await Chat.updateOne(
+{_id:c._id},
+{numero:numeroLimpio}
+);
+
+}
+
+res.send("Numeros normalizados");
+
+});
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
