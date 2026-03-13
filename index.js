@@ -734,6 +734,9 @@ app.get("/clientes", async (req,res)=>{
 
 const chats = await Chat.aggregate([
 {
+$sort:{fecha:-1}
+},
+{
 $group:{
 _id:"$numero",
 nombre:{$first:"$nombre"}
@@ -747,7 +750,6 @@ nombre:c.nombre || "Cliente"
 })));
 
 });
-
 app.get("/mensajes/:numero", async (req,res)=>{
 
 const numero = normalizarNumero(req.params.numero);
@@ -791,7 +793,7 @@ Authorization:`Bearer ${TOKEN}`,
 );
 
 await Chat.create({
-numero:normalizarNumero(numero),
+numero:normalizarNumero(),
 mensaje:mensaje,
 tipo:"humano"
 });
