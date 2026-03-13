@@ -430,7 +430,7 @@ limpio = limpio.slice(1);
 clientes[limpio] = c.nombre || "Cliente";
 
 });
-
+listaClientes = clientes;
 document.getElementById("clientes").innerHTML = Object.keys(clientes).map(numero=>`
 
 <div class="cliente" onclick="abrirChat('${numero}', this)">
@@ -462,8 +462,9 @@ document.querySelectorAll(".cliente").forEach(c=>c.classList.remove("activo"));
 
 if(elemento) elemento.classList.add("activo");
 
-document.getElementById("titulo").innerText="Chat con "+numero;
+const nombre = listaClientes[numero] || "Cliente";
 
+document.getElementById("titulo").innerText = nombre + " ("+numero+")";
 const res=await fetch("/mensajes/"+numero);
 const data=await res.json();
 
@@ -692,9 +693,9 @@ alert("Contacto guardado");
 setInterval(async()=>{
 
 if(!numeroActual) return;
-const res=await fetch("/mensajes"+!numeroActual)
+const res=await fetch("/mensajes"+numeroActual)
 const data=await res.json();
-document.getElementById("contador").innerText.length+"mensajes";
+document.getElementById("contador").innerText=data.length+"mensajes";
 
 },3000);
 

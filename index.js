@@ -203,18 +203,16 @@ tipo: "cliente"
 // =============================
 // ACTIVAR ASESOR HUMANO
 // =============================
-
 if (msg === "asesor") {
 
-humanActive[from] = Date.now();
+humanActive[message.from] = Date.now();
 
-await sendMessage(from,
+await sendMessage(message.from,
 `Un asesor humano continuará la conversación contigo en breve.`);
 
 return res.sendStatus(200);
 
 }
-
 let raw = message.from;
 
 if (raw.startsWith("521")) {
