@@ -445,6 +445,17 @@ document.getElementById("clientes").innerHTML = lista.map(numero=>`
 `).join("");
 
 }
+async function cargarContacto(){
+
+const contacto = await fetch("/contacto/"+numeroActual);
+const data = await contacto.json();
+
+document.getElementById("nombreContacto").value = data.nombre || "";
+document.getElementById("empresaContacto").value = data.empresa || "";
+document.getElementById("correoContacto").value = data.correo || "";
+document.getElementById("notasContacto").value = data.notas || "";
+
+}
 /* ABRIR CHAT */
 async function abrirChat(numero,elemento){
 
@@ -499,14 +510,7 @@ ${m.tag==="urgente"?'<span class="tag urgente">Urgente</span>':""}
 
 scrollChat();
 cargarEtiquetas();
-const contacto = await fetch("/contacto/"+numeroActual);
-const dataContacto = await contacto.json();
-
-document.getElementById("nombreContacto").value = dataContacto.nombre || "";
-document.getElementById("empresaContacto").value = dataContacto.empresa || "";
-document.getElementById("correoContacto").value = dataContacto.correo || "";
-document.getElementById("notasContacto").value = dataContacto.notas || "";
-
+cargarContacto();
 }
 
 /* FUNCIONES CRM */
@@ -688,11 +692,12 @@ alert("Contacto guardado");
 }
 /* AUTO ACTUALIZAR */
 
-setInterval(()=>{
+setInterval(async()=>{
 
-if(numeroActual){
-abrirChat(numeroActual);
-}
+if(numeroActual) return;
+const res=await fetch("/mensajes"+numeroActual)
+const data=await res.json();
+document.getElementById("contador").innerText.length+"mensajes";
 
 },3000);
 
