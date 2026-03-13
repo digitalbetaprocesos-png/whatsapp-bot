@@ -791,7 +791,7 @@ Authorization:`Bearer ${TOKEN}`,
 );
 
 await Chat.create({
-numero:normalizarNumero(to),
+numero:normalizarNumero(numero),
 mensaje:mensaje,
 tipo:"humano"
 });
@@ -870,7 +870,6 @@ await Chat.updateOne(
 res.send("numeros normalizados");
 });
 // gauardar contacto
-res.send("Numeros normalizados");
 app.post("/guardar-contacto", async (req,res)=>{
 
 const {numero,nombre,empresa,correo,notas} = req.body;
