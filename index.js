@@ -420,7 +420,7 @@ if (msg === "1") {
 2️⃣ Negocio / mayoreo
 
 Selecciona una opción:`);
-
+return res.sendStatus(200);
 }
 
 /*if (msg === "1") {
@@ -545,7 +545,8 @@ Puedes comprar directamente en nuestra tienda en línea Betita:
 Ahí encontrarás productos para uso en hogar.
 
 Si necesitas ayuda escribe *asesor* o presiona 0 para volver al menú.`);
-
+  
+return res.sendStatus(200);
   }
 
   else if (msg === "2") {
@@ -564,7 +565,7 @@ Selecciona el área:
 🇧 Industria institucional
 🇨 Limpieza industrial
 🇩 Negocios y hogar`);
-
+ return res.sendStatus(200);
   }
 
   else {
