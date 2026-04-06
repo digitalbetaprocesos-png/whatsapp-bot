@@ -110,6 +110,20 @@ const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
 
 const userStates = {};
 const processedMessages = new Set();
+const mainMenu = `Hola 👋
+Bienvenido a *Beta* especialistas en limpieza y sanitización.
+
+Selecciona una opción:
+
+1️⃣ Conocer productos
+2️⃣ Servicios de sanitización
+3️⃣ Información de Betita
+4️⃣ Solicitar cotización
+5️⃣ Reclutamiento
+6️⃣ Horarios
+7️⃣ Productos disponibles tienda`;
+
+
 
 // limpiar memoria de mensajes procesados cada 10 minutos
 setInterval(() => {
@@ -296,19 +310,6 @@ if (!userStates[from]) {
   await sendMessage(from, mainMenu); // 👈 ENVÍA MENÚ SI ES PRIMER MENSAJE
   return res.sendStatus(200);
 }
-const mainMenu = `Hola 👋
-Bienvenido a *Beta* especialistas en limpieza y sanitización.
-
-Selecciona una opción:
-
-1️⃣ Conocer productos
-2️⃣ Servicios de sanitización
-3️⃣ Información de Betita
-4️⃣ Solicitar cotización
-5️⃣ Reclutamiento
-6️⃣ Horarios
-7️⃣ Productos disponibles tienda`;
-
 
 // =============================
 // RESPUESTAS AUTOMÁTICAS
