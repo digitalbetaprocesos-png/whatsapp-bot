@@ -5,6 +5,19 @@ const mongoose = require("mongoose");
 // =============================
 // SHOPIFY CONFIG
 // =============================
+const mainMenu = `Hola 👋
+Bienvenido a *Beta* especialistas en limpieza y sanitización.
+
+Selecciona una opción:
+
+1️⃣ Conocer productos
+2️⃣ Servicios de sanitización
+3️⃣ Información de Betita
+4️⃣ Solicitar cotización
+5️⃣ Reclutamiento
+6️⃣ Horarios
+7️⃣ Productos disponibles tienda`;
+
 const SHOPIFY_TOKEN = process.env.SHOPIFY_TOKEN;
 const SHOPIFY_STORE = process.env.SHOPIFY_STORE;
 async function obtenerProductos() {
@@ -290,22 +303,13 @@ await sendMessage(from, mainMenu);
 return res.sendStatus(200);
 
 }
+
 if (!userStates[from]) {
-userStates[from] = { step: "menu" };
+  userStates[from] = { step: "menu" };
+
+  await sendMessage(from, mainMenu); // 👈 ENVÍA MENÚ SI ES PRIMER MENSAJE
+  return res.sendStatus(200);
 }
-
-const mainMenu = `Hola 👋
-Bienvenido a *Beta* especialistas en limpieza y sanitización.
-
-Selecciona una opción:
-
-1️⃣ Conocer productos
-2️⃣ Servicios de sanitización
-3️⃣ Información de Betita
-4️⃣ Solicitar cotización
-5️⃣ Reclutamiento
-6️⃣ Horarios
-7️⃣ Productos disponibles tienda`;
 
 
 // =============================
