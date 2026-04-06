@@ -16,7 +16,7 @@ Selecciona una opción:
 4️⃣ Solicitar cotización
 5️⃣ Reclutamiento
 6️⃣ Horarios`;
-//7️⃣ Productos disponibles tienda
+//7️⃣ 
 
 const SHOPIFY_TOKEN = process.env.SHOPIFY_TOKEN;
 const SHOPIFY_STORE = process.env.SHOPIFY_STORE;
@@ -408,8 +408,22 @@ return res.sendStatus(200);
 // =============================
 
 if (userStates[from].step === "menu") {
-
+  
 if (msg === "1") {
+
+  userStates[from].step = "tipo_cliente";
+
+  await sendMessage(from,  
+`¿Tu compra es para:
+
+1️⃣ Uso personal (hogar)
+2️⃣ Negocio / mayoreo
+
+Selecciona una opción:`);
+
+}
+
+/*if (msg === "1") {
 
 userStates[from].step = "productos";
 
@@ -424,7 +438,7 @@ Seleccione una opción:
 🇨 Limpieza industrial
 🇩 Negocios y hogar`);
 
-}
+}*/
 
 else if (msg === "2") {
 
@@ -513,6 +527,51 @@ await sendMessage(from, "Selecciona una opcion del menu \nsi ninguna de las opci
 
 }
 
+// Productos tipo cliente 
+else if (userStates[from].step === "tipo_cliente") {
+
+  if (msg === "1") {
+
+    // 👉 CLIENTE PERSONAL
+    userStates[from].step = "menu";
+
+    await sendMessage(from,
+`Perfecto 😊
+
+Puedes comprar directamente en nuestra tienda en línea Betita:
+
+🛒 https://betasafe.myshopify.com/
+
+Ahí encontrarás productos para uso en hogar.
+
+Si necesitas ayuda escribe *asesor* o presiona 0 para volver al menú.`);
+
+  }
+
+  else if (msg === "2") {
+
+    // 👉 CLIENTE MAYOREO
+    userStates[from].step = "productos";
+
+    await sendMessage(from,
+`Excelente 👍
+
+Trabajamos soluciones para empresas y compras a mayoreo.
+
+Selecciona el área:
+
+🇦 Industria alimentaria
+🇧 Industria institucional
+🇨 Limpieza industrial
+🇩 Negocios y hogar`);
+
+  }
+
+  else {
+
+    await sendMessage(from, "Selecciona una opción válida (1 o 2)");
+  }
+}
 
 
 
