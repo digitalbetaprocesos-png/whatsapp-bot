@@ -15,8 +15,8 @@ Selecciona una opción:
 3️⃣ Información de Betita
 4️⃣ Solicitar cotización
 5️⃣ Reclutamiento
-6️⃣ Horarios
-7️⃣ Productos disponibles tienda`;
+6️⃣ Horarios`;
+//7️⃣ Productos disponibles tienda
 
 const SHOPIFY_TOKEN = process.env.SHOPIFY_TOKEN;
 const SHOPIFY_STORE = process.env.SHOPIFY_STORE;
