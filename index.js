@@ -414,7 +414,7 @@ if (msg === "1") {
   userStates[from].step = "tipo_cliente";
 
   await sendMessage(from,  
-`¿Tu compra es para:
+`Necesitas productos para:
 
 1️⃣ Uso personal (hogar)
 2️⃣ Negocio / mayoreo
