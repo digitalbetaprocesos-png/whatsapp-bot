@@ -454,7 +454,7 @@ Selecciona el tipo de espacio:
 3️⃣ Restaurantes
 4️⃣ Espacios comerciales
 5️⃣ Casas`);
-
+return res.sendStatus(200);
 }
 
 else if (msg === "3") {
@@ -466,7 +466,7 @@ await sendMessage(from,
 
 1️⃣ Ubicación de sucursales
 2️⃣ Pedidos a domicilio en Celaya`);
-
+return res.sendStatus(200);
 }
 
 else if (msg === "4") {
@@ -477,7 +477,7 @@ await sendMessage(from,
 `Para cotizar necesitamos algunos datos.
 
 Escribe tu *nombre completo*`);
-
+return res.sendStatus(200);
 }
 
 else if (msg === "5") {
@@ -488,7 +488,7 @@ await sendMessage(from,
 ggutierrez@betaprocesos.com.mx
 
 Gracias por tu interés en formar parte de Beta.`);
-
+return res.sendStatus(200);
 }
 else if (msg === "6"){
   await sendMessage(from,
@@ -496,10 +496,8 @@ else if (msg === "6"){
 Lunes a viernes:8:00 a.m.-6:00 p.m.
 Sábado:8:00 a.m.-2:00 p.m.
 Si requiere otro tipo de informacion 
-presiona 0 para volver al menu
-  
-  
-  `);
+presiona 0 para volver al menu`);
+return res.sendStatus(200);
 }
 if (msg === "7") {
 
