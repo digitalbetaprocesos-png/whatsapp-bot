@@ -304,12 +304,6 @@ return res.sendStatus(200);
 
 }
 
-if (!userStates[from]) {
-  userStates[from] = { step: "menu" };
-
-  await sendMessage(from, mainMenu); // 👈 ENVÍA MENÚ SI ES PRIMER MENSAJE
-  return res.sendStatus(200);
-}
 
 
 // =============================
@@ -361,6 +355,12 @@ return res.sendStatus(200);
 
 }
 
+if (!userStates[from]) {
+  userStates[from] = { step: "menu" };
+
+  await sendMessage(from, mainMenu); // 👈 ENVÍA MENÚ SI ES PRIMER MENSAJE
+  return res.sendStatus(200);
+}
 
 // =============================
 // SALUDO AUTOMÁTICO
