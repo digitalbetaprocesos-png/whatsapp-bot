@@ -315,7 +315,7 @@ if (!userStates[from]) {
 // =============================
 // RESPUESTAS AUTOMÁTICAS
 // =============================
-if (msg.includes("Vacante")|| msg.includes("Trabajo")|| msg.include ("alguna vacante disponible")){
+if (msg.includes("Vacante")|| msg.includes("Trabajo")|| msg.includes ("alguna vacante disponible")){
   await sendMessage(from,
 `Para cualquier informacion de vacantes envía tu CV al correo:
 
