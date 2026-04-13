@@ -315,13 +315,15 @@ if (!userStates[from]) {
 // =============================
 // RESPUESTAS AUTOMÁTICAS
 // =============================
-if (msg.includes("Vacante")|| msg.includes("Trabajo")|| msg.include ("alguna vacante disponible"))
+if (msg.includes("Vacante")|| msg.includes("Trabajo")|| msg.include ("alguna vacante disponible")){
   await sendMessage(from,
 `Para cualquier informacion de vacantes envía tu CV al correo:
 
 ggutierrez@betaprocesos.com.mx
   
 Gracias por tu interés en formar parte de Beta.`)
+return res.sendStatus(200);
+  }
 if (msg.includes("donde se encuentra beta") || msg.includes("dónde se encuentra beta")|| msg.includes("ubicación")) {
 
 await sendMessage(from,
