@@ -357,7 +357,10 @@ return res.sendStatus(200);
 // =============================
 // SALUDO AUTOMÁTICO
 // =============================
-
+// 🔥 ASEGURAR ESTADO DEL USUARIO (ANTES DE TODO)
+if (!userStates[from]) {
+  userStates[from] = { step: "menu" };
+}
 const saludos = [
 "hola","buenas","buenos dias","buenos días",
 "buen dia","buen día","buenas tardes",
@@ -365,8 +368,6 @@ const saludos = [
 ];
 
 if (saludos.some(s => msg.includes(s))) {
-
-userStates[from].step = "menu";
 await sendMessage(from, mainMenu);
 return res.sendStatus(200);
 
@@ -389,12 +390,6 @@ return res.sendStatus(200);
 
 }
 
-if (!userStates[from]) {
-  userStates[from] = { step: "menu" };
-
-  await sendMessage(from, mainMenu); // 👈 ENVÍA MENÚ SI ES PRIMER MENSAJE
-  return res.sendStatus(200);
-}
 
 
 
