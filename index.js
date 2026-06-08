@@ -1094,7 +1094,7 @@ await Chat.updateMany(
 res.send("Nombres actualizados");
 
 });
-// gauardar contacto
+// guardar contacto
 app.post("/guardar-contacto", async (req,res)=>{
 
 const {numero,nombre,empresa,correo,notas} = req.body;
