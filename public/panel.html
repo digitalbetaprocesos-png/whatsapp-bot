@@ -573,8 +573,11 @@ document.getElementById("mensajes").innerHTML=data.map(m=>`
 
 <div class="mensaje ${(m.tipo==="bot"|| m.tipo==="humano")?"enviado":"recibido"}">
 
-${m.mensaje}
-
+${m.mediaType === "image"
+?`<img src="${m.mediaUrl}" 
+style="max-width:250px;border-radius:10px;">`
+: m.mensaje
+}
 <div class="hora">
 
 ${m.fecha?new Date(m.fecha).toLocaleTimeString():""}
