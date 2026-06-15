@@ -82,6 +82,8 @@ nombre: String,
 mensaje:String,
 tipo:String,
 etiquetas: [String],
+mediaUrl:String,
+mediaType:String,
 marcadoNoLeido:{
   type: Boolean,
   default: false
@@ -233,15 +235,27 @@ if (message.from === PHONE_NUMBER_ID) {
   return res.sendStatus(200);
 }
 
-// solo aceptar mensajes de texto
+
 if (!message) {
   return res.sendStatus(200);
 }
 if (message.type === "image"){
+  const mediaId = message.image.id;
+  const mediaInfo = await axios.get(
+   `https://graph.facebook.com/v24.0/${mediaId}`,
+   {
+    headers:{
+      Authorization : `Bearer ${TOKEN}`
+    }
+   }
+  );
   await Chat.create({
     numero : normalizarNumero(message.from),
     nombre : nombreCliente,
     mensaje : "[Imagen]",
+    tipo: "cliente",
+    mediaUrl : mediaInfo.data.url,
+    mediaType : "image",
     leido : false 
   });
   return res.sendStatus(200);
