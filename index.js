@@ -234,7 +234,16 @@ if (message.from === PHONE_NUMBER_ID) {
 }
 
 // solo aceptar mensajes de texto
-if (!message || message.type !== "text") {
+if (!message) {
+  return res.sendStatus(200);
+}
+if (message.type === "image"){
+  await Chat.create({
+    numero : normalizarNumero(message.from),
+    nombre : nombreCliente,
+    mensaje : "[Imagen]",
+    leido : false 
+  });
   return res.sendStatus(200);
 }
 
