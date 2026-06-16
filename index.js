@@ -125,6 +125,9 @@ const PHONE_NUMBER_ID = process.env.PHONE_NUMBER_ID;
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
 const userStates = {};
 const processedMessages = new Set();
+// -------------------------------------------
+// configuracion de cloudinary variables
+// -------------------------------------------
 cloudinary.config({
   cloud_name : process.env.CLOUD_NAME,
   api_key : process.env.API_KEY,
@@ -237,7 +240,7 @@ if (!value?.messages) return res.sendStatus(200);
 
 const message = value.messages[0];
 
-// evitar responder a mensajes del propio bot
+// evita que responda a mensajes del propio bot
 if (message.from === PHONE_NUMBER_ID) {
   return res.sendStatus(200);
 }
@@ -250,7 +253,7 @@ if (message.type === "image") {
 
   const mediaId = message.image.id;
 
-  // 1. Obtener URL del archivo
+  // Obteniene URL del archivo
   const mediaInfo = await axios.get(
     `https://graph.facebook.com/v24.0/${mediaId}`,
     {
@@ -260,7 +263,7 @@ if (message.type === "image") {
     }
   );
 
-  // 2. Descargar imagen REAL
+  // Descarga imagen 
   const file = await axios.get(mediaInfo.data.url, {
     responseType: "arraybuffer",
     headers: {
@@ -268,23 +271,23 @@ if (message.type === "image") {
     }
   });
 
-  // 🔥 VALIDACIÓN IMPORTANTE
+  // VALIDACIÓN 
   if (!file.data || file.data.length < 1000) {
     console.log("Archivo inválido o vacío");
     return res.sendStatus(200);
   }
 
-  // 3. Convertir a base64 correcto
+  // Convierte a base64 
   const base64 = Buffer.from(file.data).toString("base64");
 
   const dataUri = `data:image/jpeg;base64,${base64}`;
 
-  // 4. Subir a Cloudinary
+  // la Sube a Cloudinary
   const upload = await cloudinary.uploader.upload(dataUri, {
     folder: "whatsapp"
   });
 
-  // 5. Guardar en Mongo
+  // Guarda en Mongo
   await Chat.create({
     numero: normalizarNumero(message.from),
     nombre: nombreCliente,
@@ -308,10 +311,10 @@ numero: normalizarNumero(message.from),
 nombre: nombreCliente,
 mensaje: msg,
 tipo: "cliente",
-leido: false // 👈 CLAVE
+leido: false // CLAVE
 });const numeroLimpio = normalizarNumero(message.from);
 
-// 🔥 GUARDAR CONTACTO AUTOMÁTICAMENTE
+// GUARDA CONTACTO AUTOMÁTICAMENTE
 await Contacto.findOneAndUpdate(
   { numero: numeroLimpio },
   { 
