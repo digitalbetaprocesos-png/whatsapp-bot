@@ -420,7 +420,7 @@ return res.sendStatus(200);
 // =============================
 // SALUDO AUTOMÁTICO
 // =============================
-// 🔥 ASEGURAR ESTADO DEL USUARIO (ANTES DE TODO)
+// ASEGURA ESTADO DEL USUARIO (ANTES DE TODO)
 if (!userStates[from]) {
   userStates[from] = { step: "menu" };
 }
