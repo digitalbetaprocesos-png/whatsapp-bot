@@ -130,9 +130,9 @@ cloudinary.config({
   api_key : process.env.API_KEY,
   api_secret : process.env.API_SECRET 
 });
-console.log("cloud_name:", process.env.CLOUDINARY_CLOUD_NAME);
-console.log("api_key :", process.env.CLOUDINARY_API_KEY);
-console.log("api_secret :", process.env.CLOUDINARY_API_SECRET ? "ok": "no");
+console.log("cloud_name:", process.env.CLOUD_NAME);
+console.log("api_key :", process.env.API_KEY);
+console.log("api_secret :", process.env.API_SECRET ? "ok": "no");
 
 // limpiar memoria de mensajes procesados cada 10 minutos
 setInterval(() => {
