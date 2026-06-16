@@ -2,6 +2,7 @@ const express = require("express");
 const axios = require("axios");
 const nodemailer = require("nodemailer");
 const mongoose = require("mongoose");
+const cloudinary = require("cloudinary").v2;
 // =============================
 // SHOPIFY CONFIG
 // =============================
@@ -122,9 +123,13 @@ app.use(express.static("public"));
 const TOKEN = process.env.WHATSAPP_TOKEN;
 const PHONE_NUMBER_ID = process.env.PHONE_NUMBER_ID;
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
-
 const userStates = {};
 const processedMessages = new Set();
+cloudinary.config({
+  cloud_name : process.env.CLOUDINARY_CLOUD_NAME,
+  api_key : process.env.CLOUDINARY_API_KEY,
+  api_secret : process.env.CLOUDINARY_API_SECRET
+});
 
 
 // limpiar memoria de mensajes procesados cada 10 minutos
@@ -249,12 +254,29 @@ if (message.type === "image"){
     }
    }
   );
+  const imageResponse = await axios.get(
+    mediaInfo.data.url,
+    {
+      reponseType : "arraybuffer",
+      headers : {
+        Authorization: `Bearer ${TOKEN}`
+      }
+    });
+
+  const base64Image = 
+  `data:image/jpeg;base64,${Buffer.from(imageResponse.data).toString("base64")}`;
+  const uploadResult = await cloudinary.uploader.upload(
+    base64Image,
+    {
+      folder: "whatsapp"
+    }
+  );
   await Chat.create({
     numero : normalizarNumero(message.from),
     nombre : nombreCliente,
     mensaje : "[Imagen]",
     tipo: "cliente",
-    mediaUrl : mediaInfo.data.url,
+    mediaUrl : uploadResult.secure_url,
     mediaType : "image",
     leido : false 
   });
