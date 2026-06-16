@@ -126,9 +126,9 @@ const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
 const userStates = {};
 const processedMessages = new Set();
 cloudinary.config({
-  cloud_name : process.env.CLOUDINARY_CLOUD_NAME,
-  api_key : process.env.CLOUDINARY_API_KEY,
-  api_secret : process.env.CLOUDINARY_API_SECRET 
+  cloud_name : process.env.CLOUD_NAME,
+  api_key : process.env.API_KEY,
+  api_secret : process.env.API_SECRET 
 });
 console.log("cloud_name:", process.env.CLOUDINARY_CLOUD_NAME);
 console.log("api_key :", process.env.CLOUDINARY_API_KEY);
