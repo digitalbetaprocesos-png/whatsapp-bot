@@ -246,42 +246,55 @@ if (message.from === PHONE_NUMBER_ID) {
 if (!message) {
   return res.sendStatus(200);
 }
-if (message.type === "image"){
+if (message.type === "image") {
+
   const mediaId = message.image.id;
+
+  // 1. Obtener URL del archivo
   const mediaInfo = await axios.get(
-   `https://graph.facebook.com/v24.0/${mediaId}`,
-   {
-    headers:{
-      Authorization : `Bearer ${TOKEN}`
-    }
-   }
-  );
-  const imageResponse = await axios.get(
-    mediaInfo.data.url,
+    `https://graph.facebook.com/v24.0/${mediaId}`,
     {
-      reponseType : "arraybuffer",
-      headers : {
+      headers: {
         Authorization: `Bearer ${TOKEN}`
       }
-    });
-
-  const base64Image = 
-  `data:image/jpeg;base64,${Buffer.from(imageResponse.data).toString("base64")}`;
-  const uploadResult = await cloudinary.uploader.upload(
-    base64Image,
-    {
-      folder: "whatsapp"
     }
   );
-  await Chat.create({
-    numero : normalizarNumero(message.from),
-    nombre : nombreCliente,
-    mensaje : "[Imagen]",
-    tipo: "cliente",
-    mediaUrl : uploadResult.secure_url,
-    mediaType : "image",
-    leido : false 
+
+  // 2. Descargar imagen REAL
+  const file = await axios.get(mediaInfo.data.url, {
+    responseType: "arraybuffer",
+    headers: {
+      Authorization: `Bearer ${TOKEN}`
+    }
   });
+
+  // 🔥 VALIDACIÓN IMPORTANTE
+  if (!file.data || file.data.length < 1000) {
+    console.log("Archivo inválido o vacío");
+    return res.sendStatus(200);
+  }
+
+  // 3. Convertir a base64 correcto
+  const base64 = Buffer.from(file.data).toString("base64");
+
+  const dataUri = `data:image/jpeg;base64,${base64}`;
+
+  // 4. Subir a Cloudinary
+  const upload = await cloudinary.uploader.upload(dataUri, {
+    folder: "whatsapp"
+  });
+
+  // 5. Guardar en Mongo
+  await Chat.create({
+    numero: normalizarNumero(message.from),
+    nombre: nombreCliente,
+    mensaje: "[Imagen]",
+    tipo: "cliente",
+    mediaUrl: upload.secure_url,
+    mediaType: "image",
+    leido: false
+  });
+
   return res.sendStatus(200);
 }
 
