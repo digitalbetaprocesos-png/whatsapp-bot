@@ -395,9 +395,21 @@ cursor:pointer;">
 <div id="mensajes"></div>
 
 <div id="enviar">
-<input type="file" id="archivo">
+
+<input
+type="file"
+id="archivo"
+style="display:none"
+onchange="enviarArchivo()">
+
 <input id="texto" placeholder="Escribe un mensaje...">
-<button onclick="enviarArchivo()"> 📎 </button>
+
+<button
+id="btnArchivo"
+onclick="document.getElementById('archivo').click()">
+📎
+</button>
+
 <button id="botonEnviar" onclick="enviar()">
 Enviar
 </button>
