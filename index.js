@@ -1050,7 +1050,7 @@ const upload = multer({
 //==============================
 // ENVIAR ARCHIVO
 //==============================
-app.post("/enviar-archivo", upload.single(archivo), async (req,res){
+app.post("/enviar-archivo", upload.single("archivo"), async (req,res) =>{
   try{
     const numero = req.body.numero;
     let numeroLimpio = numero.replace(/\D/g,"")
@@ -1093,7 +1093,7 @@ app.post("/enviar-archivo", upload.single(archivo), async (req,res){
     });
     res.json({ok:true});
   }catch(error){
-    console.log(error.reponse?,data || error.message);
+    console.log(error.reponse?.data || error.message);
     res.status(500).json(error.response?.data || error.message);
   }
 }
