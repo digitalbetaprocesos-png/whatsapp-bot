@@ -768,9 +768,9 @@ formData.append("archivo", archivo);
 formData.append("numero", numeroActual);
 await fetch("/enviar-archivo",{
   method:"POST",
-  dody: formData
+  body: formData
 });
-document.getElementById("archivo").values=" ";
+document.getElementById("archivo").value=" ";
 abrirChat(numeroActual);
 }
 

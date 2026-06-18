@@ -1051,6 +1051,8 @@ const upload = multer({
 // ENVIAR ARCHIVO
 //==============================
 app.post("/enviar-archivo", upload.single("archivo"), async (req,res) =>{
+  console.log("BODY:", req.body);
+  console.log("FILE:", req.file);
   try{
     const numero = req.body.numero;
     let numeroLimpio = numero.replace(/\D/g,"")
