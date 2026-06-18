@@ -395,9 +395,9 @@ cursor:pointer;">
 <div id="mensajes"></div>
 
 <div id="enviar">
-
+<input type="file" id="archivo">
 <input id="texto" placeholder="Escribe un mensaje...">
-
+<button onclick="enviarArchivo()"> 📎 </button>
 <button id="botonEnviar" onclick="enviar()">
 Enviar
 </button>
@@ -576,7 +576,12 @@ document.getElementById("mensajes").innerHTML=data.map(m=>`
 ${m.mediaType === "image"
 ?`<img src="${m.mediaUrl}" 
 style="max-width:250px;border-radius:10px;">`
-: m.mensaje
+: m.mediaUrl
+? `<a href="${m.mediaUrl}"
+target="_blank">
+Abrir Archivo
+<a>`
+  :m.mensaje
 }
 <div class="hora">
 
@@ -741,6 +746,20 @@ document.getElementById("texto").value="";
 
 abrirChat(numeroActual);
 
+}
+async function enviarArchivo(){
+const archivo =
+document,getElementById("archivo").files[0];
+if (!archivo || !numeroActual) return;
+const formData = new FormData();
+formData.append("archivo", archivo);
+formData.append("numero", numeroActual);
+await fetch("/enviar-archivo",{
+  method:"POST",
+  dody: formData
+});
+document.getElementById("archivo").values=" ";
+abrirChat(numeroActual);
 }
 
 /* ENTER PARA ENVIAR */

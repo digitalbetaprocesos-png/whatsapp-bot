@@ -1042,7 +1042,63 @@ res.status(500).send("error");
 
 }
 
-});// =============================
+});
+const multer = rquiere ("multer");
+const upload = multer({
+  Storage : multer.memoryStorage()
+});
+//==============================
+// ENVIAR ARCHIVO
+//==============================
+app.post("/enviar-archivo", upload.single(archivo), async (req,res){
+  try{
+    const numero = req.body.numero;
+    let numeroLimpio = numero.replace(/\D/g,"")
+    if(!numeroLimpio.startsWith("52")){
+      numeroLimpio = "52" + numeroLimpio;
+    }
+    const resultado = await cloudinary.uploader.upload(
+    `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`,
+    {
+      folder:"whatsapp"
+    }
+    );
+    let tipo = "document";
+    if(req.file.mimetype.startsWith("iamge/")){
+      tipo = "image";
+    }
+    await axios.post(
+      `https://graph.facebook.com/v24.0/${PHONE_NUMBER_ID}/messages`,
+      {
+        messaging_product:"whatsapp",
+        to:numeroLimpio,
+        type:tipo,
+        [tipo]:{
+          link:resultado.secure.url
+        }
+      },
+      {
+        headers:{
+          Authorization:`Bearer ${TOKEN}`,
+          "Content-Type":"application/json"
+        }
+      }
+    );
+    await Chat.create({
+      numero: normalizarNumero(numero),
+      mensaje:"[Archivo enviado]",
+      tipo:"humano",
+      mediaUrl: resultado.secure_url,
+      mediaType: tipo
+    });
+    res.json({ok:true});
+  }catch(error){
+    console.log(error.reponse?,data || error.message);
+    res.status(500).json(error.response?.data || error.message);
+  }
+}
+);
+// =============================
 // GUARDAR ETIQUETA
 // =============================
 app.post("/etiqueta", async (req,res)=>{
