@@ -1095,9 +1095,22 @@ app.post("/enviar-archivo", upload.single("archivo"), async (req,res) =>{
     });
     res.json({ok:true});
   }catch(error){
-    console.log(error.response?.data || error.message);
-    res.status(500).json(error.response?.data || error.message);
-  }
+
+  console.log("ERROR COMPLETO");
+  console.log(error);
+
+  console.log("response:");
+  console.log(error.response?.data);
+
+  console.log("message:");
+  console.log(error.message);
+
+  res.status(500).json({
+    message:error.message,
+    response:error.response?.data
+  });
+
+}
 }
 );
 // =============================
