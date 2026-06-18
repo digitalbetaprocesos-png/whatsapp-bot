@@ -1045,7 +1045,7 @@ res.status(500).send("error");
 });
 const multer = require ("multer");
 const upload = multer({
-  Storage : multer.memoryStorage()
+  storage : multer.memoryStorage()
 });
 //==============================
 // ENVIAR ARCHIVO
@@ -1064,7 +1064,7 @@ app.post("/enviar-archivo", upload.single("archivo"), async (req,res) =>{
     }
     );
     let tipo = "document";
-    if(req.file.mimetype.startsWith("iamge/")){
+    if(req.file.mimetype.startsWith("image/")){
       tipo = "image";
     }
     await axios.post(
@@ -1074,7 +1074,7 @@ app.post("/enviar-archivo", upload.single("archivo"), async (req,res) =>{
         to:numeroLimpio,
         type:tipo,
         [tipo]:{
-          link:resultado.secure.url
+          link: resultado.secure_url
         }
       },
       {
@@ -1093,7 +1093,7 @@ app.post("/enviar-archivo", upload.single("archivo"), async (req,res) =>{
     });
     res.json({ok:true});
   }catch(error){
-    console.log(error.reponse?.data || error.message);
+    console.log(error.response?.data || error.message);
     res.status(500).json(error.response?.data || error.message);
   }
 }
