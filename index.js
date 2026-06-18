@@ -1043,7 +1043,7 @@ res.status(500).send("error");
 }
 
 });
-const multer = requiere ("multer");
+const multer = require ("multer");
 const upload = multer({
   Storage : multer.memoryStorage()
 });
