@@ -1053,6 +1053,7 @@ const upload = multer({
 app.post("/enviar-archivo", upload.single("archivo"), async (req,res) =>{
   console.log("BODY:", req.body);
   console.log("FILE:", req.file);
+ 
   try{
     const numero = req.body.numero;
     let numeroLimpio = numero.replace(/\D/g,"")
@@ -1062,13 +1063,20 @@ app.post("/enviar-archivo", upload.single("archivo"), async (req,res) =>{
     const resultado = await cloudinary.uploader.upload(
     `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`,
     {
-      folder:"whatsapp"
+      folder:"whatsapp",
+      resource_type:"auto"
     }
     );
+     console.log("URL CLOUDINARY:");
+     console.log(resultado.secure_url);
+     console.log("MIMETYPE:", req.file.mimetype);
     let tipo = "document";
     if(req.file.mimetype.startsWith("image/")){
       tipo = "image";
     }
+    console.log("TIPO:", tipo);
+    console.log("URL:", resultado.secure_url);
+    console.log("NUMERO:", numeroLimpio);
     await axios.post(
       `https://graph.facebook.com/v24.0/${PHONE_NUMBER_ID}/messages`,
       {
@@ -1099,7 +1107,10 @@ app.post("/enviar-archivo", upload.single("archivo"), async (req,res) =>{
   console.log("ERROR COMPLETO");
   console.log(error);
 
-  console.log("response:");
+  console.log("ERROR META:");
+  console.log(
+    JSON.stringify(error.response?.data, null, 2)
+  );
   console.log(error.response?.data);
 
   console.log("message:");
