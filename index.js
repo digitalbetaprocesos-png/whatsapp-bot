@@ -167,6 +167,7 @@ async function sendMessage(to, message) {
         }
       }
     );
+    console.log("META OK:", respuesta.data);
     await Chat.create({
 numero: normalizarNumero(to),
 mensaje: message,
