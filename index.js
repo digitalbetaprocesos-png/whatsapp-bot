@@ -147,15 +147,14 @@ setInterval(() => {
 // FUNCIÓN PARA ENVIAR MENSAJES
 // =============================
 
-
 async function sendMessage(to, message) {
 
   try {
 
     let raw = to.replace(/\D/g, "");
 
-     await axios.post(
-      `https://graph.facebook.com/v24.0/${PHONE_NUMBER_ID}/messages`,
+    await axios.post(
+    `https://graph.facebook.com/v24.0/${PHONE_NUMBER_ID}/messages`,
       {
         messaging_product: "whatsapp",
         to: raw,
@@ -163,20 +162,16 @@ async function sendMessage(to, message) {
       },
       {
         headers: {
-          Authorization: `Bearer ${TOKEN}`,
+          Authorization:`Bearer ${TOKEN}`,
           "Content-Type": "application/json"
         }
       }
     );
-
-    console.log("META OK:", respuesta.data);
-
     await Chat.create({
-      numero: normalizarNumero(to),
-      mensaje: message,
-      tipo: "bot",
-      leido: true
-    });
+numero: normalizarNumero(to),
+mensaje: message,
+tipo: "bot"
+});
 
   } catch (error) {
 
@@ -184,7 +179,8 @@ async function sendMessage(to, message) {
 
   }
 
-}
+ }
+
 
 
 // =============================
