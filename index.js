@@ -154,7 +154,7 @@ async function sendMessage(to, message) {
 
     let raw = to.replace(/\D/g, "");
 
-    const respuesta = await axios.post(
+     await axios.post(
       `https://graph.facebook.com/v24.0/${PHONE_NUMBER_ID}/messages`,
       {
         messaging_product: "whatsapp",
