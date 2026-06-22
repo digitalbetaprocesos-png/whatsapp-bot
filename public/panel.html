@@ -577,6 +577,20 @@ let nombreFinal = nombre;
 const resContacto = await fetch("/contacto/" + numero);
 const contacto = await resContacto.json();
 
+
+if (contacto) {
+  document.getElementById("nombreContacto").value = contacto.nombre || "";
+  document.getElementById("empresaContacto").value = contacto.empresa || "";
+  document.getElementById("correoContacto").value = contacto.correo || "";
+  document.getElementById("notasContacto").value = contacto.notas || "";
+} else {
+  // Si no hay datos previos, limpiar los campos o dejar solo el nombre por defecto
+  document.getElementById("nombreContacto").value = listaClientes[numero] || "Cliente";
+  document.getElementById("empresaContacto").value = "";
+  document.getElementById("correoContacto").value = "";
+  document.getElementById("notasContacto").value = "";
+}
+// ----------------------------------------------------
 if(contacto && contacto.nombre){
   nombreFinal = contacto.nombre;
 }
