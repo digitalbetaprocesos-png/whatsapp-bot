@@ -153,7 +153,7 @@ async function sendMessage(to, message) {
 
     let raw = to.replace(/\D/g, "");
 
-    await axios.post(
+    const respuesta = await axios.post(
       `https://graph.facebook.com/v24.0/${PHONE_NUMBER_ID}/messages`,
       {
         messaging_product: "whatsapp",
@@ -167,12 +167,15 @@ async function sendMessage(to, message) {
         }
       }
     );
+
     console.log("META OK:", respuesta.data);
+
     await Chat.create({
-numero: normalizarNumero(to),
-mensaje: message,
-tipo: "bot"
-});
+      numero: normalizarNumero(to),
+      mensaje: message,
+      tipo: "bot",
+      leido: true
+    });
 
   } catch (error) {
 
@@ -180,7 +183,7 @@ tipo: "bot"
 
   }
 
- }
+}
 
 
 // =============================
