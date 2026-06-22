@@ -948,7 +948,68 @@ document.getElementById("buscar").addEventListener("input", (e) => {
 });
 </script>
 
+//enviar mensaje nuevo numero 
+<button onclick="nuevoChat()" style="
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: #25D366;
+    color: white;
+    border: none;
+    padding: 12px 18px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 50px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    cursor: pointer;
+    z-index: 999;
+">
+  ➕ Nuevo Mensaje
+</button>
 
+<script>
+function nuevoChat() {
+  // 1. Pedir el número de teléfono al usuario
+  let numero = prompt("Introduce el número de WhatsApp (con clave de país, ej: 52461XXXXXXX):");
+  
+  if (!numero) return; // Si cancela, no hace nada
+
+  // 2. Limpiar el número tal como lo hace tu backend
+  numero = numero.replace(/\D/g, "");
+  if (numero.startsWith("521")) numero = numero.slice(3);
+  else if (numero.startsWith("52")) numero = numero.slice(2);
+  else if (numero.startsWith("1") && numero.length === 11) numero = numero.slice(1);
+
+  if (numero.length < 10) {
+    alert("Número inválido. Asegúrate de incluir los 10 dígitos mínimos.");
+    return;
+  }
+
+  // 3. Simular que abrimos el chat (reutiliza tu función abrirChat de forma limpia)
+  numeroActual = numero;
+  
+  // Quitamos el diseño activo de los otros clientes
+  document.querySelectorAll(".cliente").forEach(c => c.classList.remove("activo"));
+  
+  // Ponemos el título del chat listo con el nuevo número
+  document.getElementById("titulo").innerText = "Cliente Nuevo (" + numero + ")";
+  
+  // Limpiamos el contenedor de mensajes y el contador para que puedas empezar a escribirle
+  document.getElementById("mensajes").innerHTML = `
+    <div style="text-align:center; color:gray; margin-top:20px; font-size:13px;">
+      Conversación nueva con +52 ${numero.slice(0,3)} ${numero.slice(3,6)} ${numero.slice(6)}<br>
+      Escribe un mensaje abajo para iniciar el chat.
+    </div>
+  `;
+  document.getElementById("contador").innerText = "0 mensajes";
+  
+  // Limpiamos el panel de contactos para que lo llenes si quieres
+  document.getElementById("nombreContacto").value = "";
+  document.getElementById("empresaContacto").value = "";
+  document.getElementById("correoContacto").value = "";
+  document.getElementById("notasContacto").value = "";
+}
+</script>
 </body>
 
 </html>
