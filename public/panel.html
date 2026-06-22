@@ -915,7 +915,23 @@ document.getElementById("contador").innerText=data.length+"mensajes";
 cargarClientes();
 setInterval(cargarClientes, 3000);
 
+// Escuchar lo que el usuario escribe en la barra de búsqueda
+document.getElementById("buscar").addEventListener("input", (e) => {
+  const termino = e.target.value.toLowerCase().trim();
+  const clientesHTML = document.querySelectorAll("#clientes .cliente");
 
+  clientesHTML.forEach(cliente => {
+    // Obtenemos el texto completo dentro de la tarjeta del cliente (nombre y número)
+    const textoCliente = cliente.innerText.toLowerCase();
+
+    // Si coincide con lo que se busca, se queda; si no, se oculta
+    if (textoCliente.includes(termino)) {
+      cliente.style.display = "flex";
+    } else {
+      cliente.style.display = "none";
+    }
+  });
+});
 </script>
 
 
