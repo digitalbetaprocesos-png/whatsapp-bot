@@ -596,9 +596,18 @@ await sendMessage(from, "Selecciona una opcion del menu \nsi ninguna de las opci
 else if (userStates[from].step === "tipo_cliente") {
 
   if (msg === "1") {
-
     // 👉 CLIENTE PERSONAL
     userStates[from].step = "menu";
+    if (!productos.length) {
+    await sendMessage(from, "No hay productos disponibles en este momento.");
+    return;
+  }
+
+  let respuesta = "🛒 Estos son algunos productos disponibles:\n";
+
+  productos.slice(0, 5).forEach(p => {
+    respuesta += `\n• ${p.title}`;
+  });
 
     await sendMessage(from,
 `Perfecto 😊
@@ -607,7 +616,7 @@ Puedes comprar directamente en nuestra tienda en línea Betita:
 
 🛒 https://betasafe.myshopify.com/
 
-Ahí encontrarás productos para uso en hogar.
+Ahí encontrarás productos para uso en hogar ${respuesta}.
 
 Si necesitas ayuda escribe *asesor* o presiona 0 para volver al menú.`);
   
