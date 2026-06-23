@@ -969,12 +969,12 @@ document.getElementById("buscar").addEventListener("input", (e) => {
 
 <script>
 function nuevoChat() {
-  // 1. Pedir el número de 10 dígitos
+  //  Pedir el número de 10 dígitos
   let numero = prompt("Introduce el número de WhatsApp (A 10 dígitos, ej: 4611234567):");
   
   if (!numero) return; 
 
-  // 2. Limpiar caracteres extra
+  //  Limpiar caracteres extra
   numero = numero.replace(/\D/g, "");
 
   // Si el usuario olvida poner el 52, se le agrega automáticamente
