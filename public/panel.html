@@ -977,7 +977,7 @@ function nuevoChat() {
   // 2. Limpiar caracteres extra
   numero = numero.replace(/\D/g, "");
 
-  // Si el usuario olvidó poner el 52, se lo agregamos automáticamente
+  // Si el usuario olvida poner el 52, se le agrega automáticamente
   if (numero.length === 10) {
     numero = "52" + numero;
   }
@@ -987,17 +987,17 @@ function nuevoChat() {
     return;
   }
 
-  // 3. Establecer la variable exactamente como la espera tu función enviar()
-  // Guardamos el número limpio con el 52 incluido
+  // 
+  // Guarda el número limpio con el 52 incluido
   numeroActual = numero; 
   
   // Quitamos el diseño activo de los otros clientes
   document.querySelectorAll(".cliente").forEach(c => c.classList.remove("activo"));
   
-  // Ponemos el título del chat listo
+  // Pone el título del chat listo
   document.getElementById("titulo").innerText = "Cliente Nuevo (+" + numero + ")";
   
-  // Limpiamos la pantalla de chat para el nuevo mensaje
+  // Limpia la pantalla de chat para el nuevo mensaje
   document.getElementById("mensajes").innerHTML = `
     <div style="text-align:center; color:gray; margin-top:20px; font-size:13px;">
       Conversación nueva con +${numero.slice(0,2)} ${numero.slice(2,5)} ${numero.slice(5,8)} ${numero.slice(8)}<br>
@@ -1006,7 +1006,7 @@ function nuevoChat() {
   `;
   document.getElementById("contador").innerText = "0 mensajes";
   
-  // Limpiar campos de contacto
+  // Limpia campos de contacto
   document.getElementById("nombreContacto").value = "";
   document.getElementById("empresaContacto").value = "";
   document.getElementById("correoContacto").value = "";
