@@ -969,41 +969,44 @@ document.getElementById("buscar").addEventListener("input", (e) => {
 
 <script>
 function nuevoChat() {
-  // 1. Pedir el número de teléfono al usuario
-  let numero = prompt("Introduce el número de WhatsApp (con clave de país, ej: 52461XXXXXXX):");
+  // 1. Pedir el número de 10 dígitos
+  let numero = prompt("Introduce el número de WhatsApp (A 10 dígitos, ej: 4611234567):");
   
-  if (!numero) return; // Si cancela, no hace nada
+  if (!numero) return; 
 
-  // 2. Limpiar el número tal como lo hace tu backend
+  // 2. Limpiar caracteres extra
   numero = numero.replace(/\D/g, "");
-  if (numero.startsWith("521")) numero = numero.slice(3);
-  else if (numero.startsWith("52")) numero = numero.slice(2);
-  else if (numero.startsWith("1") && numero.length === 11) numero = numero.slice(1);
 
-  if (numero.length < 10) {
-    alert("Número inválido. Asegúrate de incluir los 10 dígitos mínimos.");
+  // Si el usuario olvidó poner el 52, se lo agregamos automáticamente
+  if (numero.length === 10) {
+    numero = "52" + numero;
+  }
+
+  if (numero.length < 12) {
+    alert("Por favor, introduce un número válido con clave lada (10 dígitos).");
     return;
   }
 
-  // 3. Simular que abrimos el chat (reutiliza tu función abrirChat de forma limpia)
-  numeroActual = numero;
+  // 3. Establecer la variable exactamente como la espera tu función enviar()
+  // Guardamos el número limpio con el 52 incluido
+  numeroActual = numero; 
   
   // Quitamos el diseño activo de los otros clientes
   document.querySelectorAll(".cliente").forEach(c => c.classList.remove("activo"));
   
-  // Ponemos el título del chat listo con el nuevo número
-  document.getElementById("titulo").innerText = "Cliente Nuevo (" + numero + ")";
+  // Ponemos el título del chat listo
+  document.getElementById("titulo").innerText = "Cliente Nuevo (+" + numero + ")";
   
-  // Limpiamos el contenedor de mensajes y el contador para que puedas empezar a escribirle
+  // Limpiamos la pantalla de chat para el nuevo mensaje
   document.getElementById("mensajes").innerHTML = `
     <div style="text-align:center; color:gray; margin-top:20px; font-size:13px;">
-      Conversación nueva con +52 ${numero.slice(0,3)} ${numero.slice(3,6)} ${numero.slice(6)}<br>
-      Escribe un mensaje abajo para iniciar el chat.
+      Conversación nueva con +${numero.slice(0,2)} ${numero.slice(2,5)} ${numero.slice(5,8)} ${numero.slice(8)}<br>
+      Escribe tu mensaje abajo y presiona Enviar.
     </div>
   `;
   document.getElementById("contador").innerText = "0 mensajes";
   
-  // Limpiamos el panel de contactos para que lo llenes si quieres
+  // Limpiar campos de contacto
   document.getElementById("nombreContacto").value = "";
   document.getElementById("empresaContacto").value = "";
   document.getElementById("correoContacto").value = "";
