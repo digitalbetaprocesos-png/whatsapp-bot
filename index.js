@@ -806,10 +806,8 @@ Av. 2 de Abril
 https://maps.app.goo.gl/JpPS5LqrhEqMhjtm8
 
 Si deseas realizar un pedido o recibir información puedes escribir directamente a nuestro WhatsApp:
-WhatsApp:
 https://wa.me/524612397325
 También puedes seguirnos en Instagram:
-Instagram:
 https://www.instagram.com/betita.tienda/`);
 
 }
