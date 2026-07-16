@@ -319,6 +319,43 @@ button{
 button:hover{
   transform:scale(1.05);
 }
+#estadoEnvio{
+    position:fixed;
+    bottom:90px;
+    right:20px;
+
+    background:#323232;
+    color:white;
+
+    padding:12px 18px;
+    border-radius:10px;
+
+    font-size:14px;
+
+    opacity:0;
+    transform:translateY(20px);
+
+    transition:.3s;
+
+    z-index:9999;
+}
+
+#estadoEnvio.mostrar{
+    opacity:1;
+    transform:translateY(0);
+}
+
+#estadoEnvio.enviando{
+    background:#1976d2;
+}
+
+#estadoEnvio.ok{
+    background:#2e7d32;
+}
+
+#estadoEnvio.error{
+    background:#d32f2f;
+}
 @keyframes fadeIn{
   from{
     opacity:0;
@@ -400,6 +437,7 @@ cursor:pointer;">
 <div id="mensajes"></div>
 
 <div id="enviar">
+<div id="estadoEnvio"></div>
 
 <input
 type="file"
@@ -758,20 +796,36 @@ const texto=document.getElementById("texto").value;
 
 if(!texto || !numeroActual) return;
 
-await fetch("/responder",{
+mostrarEstado("⏳ Enviando...", "enviando");
 
-method:"POST",
+try{
 
-headers:{
-"Content-Type":"application/json"
-},
+    const respuesta = await fetch("/responder",{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+            numero:numeroActual,
+            mensaje:texto
+        })
+    });
 
-body:JSON.stringify({
-numero:numeroActual,
-mensaje:texto
-})
+    if(!respuesta.ok){
+        throw new Error();
+    }
 
-});
+    mostrarEstado("✔ Mensaje enviado","ok");
+
+    document.getElementById("texto").value="";
+
+    abrirChat(numeroActual);
+
+}catch(error){
+
+    mostrarEstado("❌ Error al enviar","error");
+
+}
 
 document.getElementById("texto").value="";
 
@@ -1011,6 +1065,23 @@ function nuevoChat() {
   document.getElementById("empresaContacto").value = "";
   document.getElementById("correoContacto").value = "";
   document.getElementById("notasContacto").value = "";
+}
+function mostrarEstado(texto,tipo){
+
+    const estado = document.getElementById("estadoEnvio");
+
+    estado.innerHTML = texto;
+
+    estado.className = "";
+    estado.classList.add("mostrar");
+    estado.classList.add(tipo);
+
+    clearTimeout(estado.timer);
+
+    estado.timer = setTimeout(()=>{
+        estado.classList.remove("mostrar");
+    },2500);
+
 }
 </script>
 </body>
