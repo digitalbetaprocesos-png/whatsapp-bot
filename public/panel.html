@@ -437,6 +437,71 @@ button:hover{
     padding:10px;
 
 }
+.mensaje{
+    position:relative;
+}
+
+.menuMensajeBtn{
+
+    position:absolute;
+
+    top:6px;
+    right:8px;
+
+    cursor:pointer;
+
+    font-size:18px;
+
+    color:#777;
+
+    display:none;
+
+    user-select:none;
+
+}
+
+.mensaje:hover .menuMensajeBtn{
+    display:block;
+}
+
+.menuMensaje{
+
+    position:absolute;
+
+    top:28px;
+    right:8px;
+
+    background:white;
+
+    border-radius:8px;
+
+    box-shadow:0 4px 12px rgba(0,0,0,.2);
+
+    min-width:180px;
+
+    display:none;
+
+    z-index:500;
+
+    overflow:hidden;
+
+}
+
+.menuMensaje div{
+
+    padding:11px 14px;
+
+    cursor:pointer;
+
+    font-size:14px;
+
+}
+
+.menuMensaje div:hover{
+
+    background:#f5f5f5;
+
+}
 @keyframes fadeIn{
   from{
     opacity:0;
@@ -752,6 +817,38 @@ document.getElementById("contador").innerText=data.length+" mensajes";
 document.getElementById("mensajes").innerHTML=data.map(m=>`
 
 <div class="mensaje ${(m.tipo==="bot"|| m.tipo==="humano")?"enviado":"recibido"}">
+  <div class="menuMensajeBtn"
+onclick="toggleMenuMensaje(event,'${m._id}')">
+
+⋮
+
+</div>
+
+<div
+id="menuMensaje-${m._id}"
+class="menuMensaje">
+
+<div onclick="copiarMensaje('${(m.mensaje||'').replace(/`/g,'\\`')}')">
+📋 Copiar
+</div>
+
+<div onclick="responderMensaje('${m._id}')">
+↩ Responder
+</div>
+
+<div onclick="favorito('${m._id}')">
+⭐ Destacar
+</div>
+
+<div onclick="infoMensaje('${m._id}')">
+📄 Información
+</div>
+
+<div onclick="fijarMensaje('${m._id}')">
+📌 Fijar mensaje
+</div>
+
+</div>
 
 ${m.mediaType === "image"
 ?`<img src="${m.mediaUrl}" 
@@ -1227,6 +1324,59 @@ function mostrarPreviewArchivo(){
         icono.style.display="block";
 
     }
+
+}
+function toggleMenuMensaje(e,id){
+
+    e.stopPropagation();
+
+    document.querySelectorAll(".menuMensaje").forEach(menu=>{
+
+        if(menu.id!="menuMensaje-"+id){
+
+            menu.style.display="none";
+
+        }
+
+    });
+
+    const menu=document.getElementById("menuMensaje-"+id);
+
+    menu.style.display=
+    menu.style.display=="block"
+    ?"none"
+    :"block";
+
+}
+document.addEventListener("click",()=>{
+
+    document.querySelectorAll(".menuMensaje").forEach(menu=>{
+
+        menu.style.display="none";
+
+    });
+
+});
+async function copiarMensaje(texto){
+
+    if(!texto) return;
+
+    await navigator.clipboard.writeText(texto);
+
+}
+function infoMensaje(id){
+
+    alert("Aquí mostraremos la información del mensaje.");
+
+}
+function responderMensaje(id){
+
+    document.getElementById("texto").focus();
+
+}
+function fijarMensaje(id){
+
+    alert("Próximamente podremos fijar mensajes.");
 
 }
 document
