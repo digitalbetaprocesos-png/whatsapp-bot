@@ -356,6 +356,87 @@ button:hover{
 #estadoEnvio.error{
     background:#d32f2f;
 }
+.modalArchivo{
+
+    position:fixed;
+    inset:0;
+
+    background:rgba(0,0,0,.45);
+
+    display:none;
+
+    justify-content:center;
+    align-items:center;
+
+    z-index:99999;
+
+}
+
+.contenidoModal{
+
+    width:380px;
+
+    background:white;
+
+    border-radius:15px;
+
+    padding:20px;
+
+    text-align:center;
+
+    animation:fadeIn .2s;
+
+}
+
+#previewImagen{
+
+    max-width:100%;
+
+    max-height:250px;
+
+    display:none;
+
+    border-radius:10px;
+
+    margin:15px 0;
+
+}
+
+#nombreArchivo{
+
+    font-weight:bold;
+
+    margin-top:10px;
+
+}
+
+#tamArchivo{
+
+    color:#777;
+
+    margin-top:6px;
+
+    font-size:13px;
+
+}
+
+.botonesModal{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    margin-top:20px;
+
+}
+
+.botonesModal button{
+
+    width:48%;
+
+    padding:10px;
+
+}
 @keyframes fadeIn{
   from{
     opacity:0;
@@ -443,7 +524,7 @@ cursor:pointer;">
 type="file"
 id="archivo"
 style="display:none"
-onchange="enviarArchivo()">
+onchange="mostrarPreviewArchivo()">
 
 <input id="texto" placeholder="Escribe un mensaje...">
 
@@ -493,7 +574,37 @@ Agregar
 </div>
 
 </div>
+<div id="modalArchivo" class="modalArchivo">
 
+    <div class="contenidoModal">
+
+        <h3>📎 Archivo seleccionado</h3>
+
+        <img id="previewImagen">
+
+        <div id="iconoArchivo" style="font-size:70px;display:none;">
+            📄
+        </div>
+
+        <div id="nombreArchivo"></div>
+
+        <div id="tamArchivo"></div>
+
+        <div class="botonesModal">
+
+            <button id="cancelarArchivo">
+                Cancelar
+            </button>
+
+            <button id="confirmarArchivo">
+                Enviar
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
 <script>
 
 let numeroActual="";
@@ -1083,7 +1194,61 @@ function mostrarEstado(texto,tipo){
     },2500);
 
 }
+function mostrarPreviewArchivo(){
+
+    const archivo =
+    document.getElementById("archivo").files[0];
+
+    if(!archivo) return;
+
+    document.getElementById("modalArchivo").style.display="flex";
+
+    document.getElementById("nombreArchivo").innerText=archivo.name;
+
+    document.getElementById("tamArchivo").innerText=
+    (archivo.size/1024/1024).toFixed(2)+" MB";
+
+    const preview=document.getElementById("previewImagen");
+
+    const icono=document.getElementById("iconoArchivo");
+
+    if(archivo.type.startsWith("image/")){
+
+        preview.style.display="block";
+
+        icono.style.display="none";
+
+        preview.src=URL.createObjectURL(archivo);
+
+    }else{
+
+        preview.style.display="none";
+
+        icono.style.display="block";
+
+    }
+
+}
+document
+.getElementById("cancelarArchivo")
+.onclick=()=>{
+
+    document.getElementById("modalArchivo").style.display="none";
+
+    document.getElementById("archivo").value="";
+
+}
+document
+.getElementById("confirmarArchivo")
+.onclick=()=>{
+
+    document.getElementById("modalArchivo").style.display="none";
+
+    enviarArchivo();
+
+}
 </script>
+
 </body>
 
 </html>
